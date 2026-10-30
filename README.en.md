@@ -13,11 +13,18 @@ phone's own IMU removes the error caused by holding the camera crooked.
 ![On-device](https://img.shields.io/badge/inference-on--device-0A7EA4)
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)
 
-<p align="center">
-  <img src="docs/img/referans/skolyoz.webp" width="216" alt="Back view of a spine with scoliosis: surface asymmetry at shoulder, scapula and waist level"><br>
-  <sub><b>Reference image:</b> back view of a spine with scoliosis. What the app measures is this kind of visible surface
-  asymmetry, not the radiographic Cobb angle. Image source and permission: <a href="docs/DATA_AND_LICENSING.md">docs/DATA_AND_LICENSING.md</a> §1 (Turkish).</sub>
-</p>
+<table>
+<tr>
+<td align="center" valign="top"><img src="docs/img/referans/skolyoz.webp" width="250" alt="Back view of a spine with scoliosis: surface asymmetry at shoulder, scapula and waist level"><br><sub><b>Reference photograph</b><br>216×228 pixels</sub></td>
+<td align="center" valign="top"><img src="docs/img/ornekler/referans.png" width="250" alt="The same photograph with the seven landmarks the models found; axillary tilt +3.38 degrees, coronal offset +0.64 degrees"><br><sub><b>Output of the models</b><br>tilt +3.38°, gate passed</sub></td>
+</tr>
+</table>
+
+<sub>Left: the reference photograph. Right: what the models in this repository output on it. This is **one example, not evidence of
+accuracy**: its true value is unknown and the same frame was found among the project's training images
+([docs/ORNEKLER.md](docs/ORNEKLER.md), Turkish). What the app measures is this kind of visible surface asymmetry, not the
+radiographic Cobb angle. Image source and permission: [docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md) §1 (Turkish).</sub>
+
 
 > [!WARNING]
 > **This is research software and a screening aid, not a diagnostic tool.** It

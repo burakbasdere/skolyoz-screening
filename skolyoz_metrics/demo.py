@@ -1,7 +1,8 @@
-"""Synthetic-sample demo: the on-device chain, mirrored in Python, drawn on a sample figure.
+"""Sample-output demo: the on-device chain, mirrored in Python, drawn on example images.
 
-No patient photograph is ever used. The sample is a *drawn* back figure whose
-armpit tilt is known by construction. The chain is a line-for-line mirror of
+Five examples use a *drawn* back figure whose armpit tilt is known by construction; no real
+person appears in them. The sixth (``kind="photo"``) is the single real photograph the README
+opens with, run through the same chain. The chain is a line-for-line mirror of
 android/.../cikarim/OlcumZinciri.kt (stretch to 640, Stage 1 decode, 128 px crops with
 black padding, soft-argmax with temperature 10, entropy / peak-distance gate, map back to the
 original resolution, angle at the original resolution), run on the real ``.tflite`` files.
@@ -17,7 +18,7 @@ import hashlib
 import importlib.util
 import json
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date
 from pathlib import Path
 
@@ -32,6 +33,9 @@ NAMES = ["sağ koltuk altı", "sol koltuk altı", "C7", "omurga 1", "omurga 2", 
          "sakrum"]
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
+DISPLAY_WIDTH = 900            # width the overlay is drawn at: the drawn figure's own width
+SYNTHETIC_FOOTER = "Tanı aracı değildir · tarama amaçlıdır · SENTETİK ÖRNEK"
+PHOTO_FOOTER = "Tanı aracı değildir · tarama amaçlıdır · GERÇEK FOTOĞRAF, TEK ÖRNEK"
 
 
 # --------------------------------------------------------------- pure helpers
@@ -205,6 +209,15 @@ class Chain:
         return Measurement((width, height), confidence, True, coarse, points, gates)
 
 
+def scaled(m: Measurement, factor: float) -> Measurement:
+    """``m`` with the refined points mapped onto an image ``factor`` times larger.
+
+    The coarse points and the gate numbers are unchanged: they are not in image pixels.
+    """
+    return replace(m, size=(round(m.size[0] * factor), round(m.size[1] * factor)),
+                   points=[(x * factor, y * factor) for x, y in m.points])
+
+
 # ------------------------------------------------------------------- drawing
 
 def _font(size: int):
@@ -232,13 +245,16 @@ def _dashed(draw, p1, p2, color, width=3, dash=22, gap=14):
 
 
 def overlay(img, m: Measurement, lines: list[str], roll_deg: float = 0.0,
-            verdict: str | None = None, guides: bool = True):
+            verdict: str | None = None, guides: bool = True, *,
+            footer: str = SYNTHETIC_FOOTER, band_below: bool = False):
     """Draw the guide the app shows: armpit line, gravity references, landmarks, reading.
 
     With ``guides=False`` (a rejected measurement) only hollow points are drawn: the app would
-    show nothing, the demo shows where the unreliable points landed.
+    show nothing, the demo shows where the unreliable points landed. With ``band_below`` the
+    text goes in a band under the frame (the verdict as its first row) instead of over it, so
+    no landmark is hidden on a short image.
     """
-    from PIL import ImageDraw
+    from PIL import Image, ImageDraw
 
     out = img.convert("RGB").copy()
     d = ImageDraw.Draw(out, "RGBA")
@@ -270,15 +286,23 @@ def overlay(img, m: Measurement, lines: list[str], roll_deg: float = 0.0,
                 d.text((x + 16, y - 16), label, fill=(255, 255, 255), font=font_small,
                        stroke_width=3, stroke_fill=(0, 0, 0))
     font = _font(34)
-    band = 46 * (len(lines) + 1) + 24
-    d.rectangle((0, h - band, w, h), fill=(0, 0, 0, 190))
-    y = h - band + 14
-    for line in lines:
-        d.text((24, y), line, fill=(255, 255, 255), font=font)
+    rows = ([verdict] if verdict and band_below else []) + lines
+    band = 46 * (len(rows) + 1) + 24
+    if band_below:
+        canvas = Image.new("RGB", (w, h + band), (0, 0, 0))
+        canvas.paste(out, (0, 0))
+        out, top = canvas, h
+        d = ImageDraw.Draw(out, "RGBA")
+    else:
+        top = h - band
+        d.rectangle((0, top, w, h), fill=(0, 0, 0, 190))
+    y = top + 14
+    for i, line in enumerate(rows):
+        warn = bool(verdict) and band_below and i == 0
+        d.text((24, y), line, fill=(255, 130, 130) if warn else (255, 255, 255), font=font)
         y += 46
-    d.text((24, y), "Tanı aracı değildir · tarama amaçlıdır · SENTETİK ÖRNEK", fill=(255, 205, 0),
-           font=_font(28))
-    if verdict:
+    d.text((24, y), footer, fill=(255, 205, 0), font=_font(28))
+    if verdict and not band_below:
         d.rectangle((0, 0, w, 74), fill=(200, 40, 40, 235))
         d.text((24, 16), verdict, fill=(255, 255, 255), font=_font(36))
     return out
@@ -291,9 +315,10 @@ class Example:
     name: str
     title: str
     note: str
-    kind: str                      # figure | blur | pitch | blank
+    kind: str                      # figure | blur | pitch | blank | photo
     tilt: float = 0.0              # drawn armpit tilt (figure / blur / pitch)
     pitch: float = 0.0             # simulated phone pitch (pitch)
+    source: str | None = None      # photo: image path relative to the repository root
     measurement: Measurement | None = None
     angle: float | None = None
     coronal: tuple[float, float] | None = None
@@ -317,14 +342,20 @@ EXAMPLES = [
             "pitch", pitch=11.0),
     Example("kisi-yok", "Karede kimse yok",
             "Boş zemin: Aşama 1 güveni eşiğin (0.25) altında kalır, ölçüm yapılmaz.", "blank"),
+    Example("referans", "Gerçek fotoğraf: README'deki referans görsel",
+            "README'nin başındaki referans fotoğraf, çizim yerine **gerçek bir sırt fotoğrafı**; "
+            "gönderilen modellerden olduğu gibi geçirildi. Sayılar bir başarım ölçüsü değildir; "
+            "nedenleri sayıların altında.", "photo", source="docs/img/referans/skolyoz.webp"),
 ]
 
 
-def _render(ex: Example, chain: Chain, ref, out_dir: Path) -> None:
+def _render(ex: Example, chain: Chain, ref, root: Path, out_dir: Path) -> None:
     from PIL import Image, ImageFilter
 
     if ex.kind == "blank":
         base = blank()
+    elif ex.kind == "photo":
+        base = Image.open(root / ex.source).convert("RGB")
     else:
         base = figure(ex.tilt)
         if ex.kind == "blur":
@@ -369,9 +400,16 @@ def _render(ex: Example, chain: Chain, ref, out_dir: Path) -> None:
                 lines = [f"Güven kapısı: REDDEDİLDİ  ({ex.rejected})",
                          "Açı gösterilmez; yeniden çekim istenir"]
     ex.measurement = m
-    shown = overlay(base, m, lines, 0.0, verdict, guides=m.reliable)
-    shown.resize((600, 800), Image.Resampling.LANCZOS).save(out_dir / f"{ex.name}.png",
-                                                             optimize=True)
+    if ex.kind == "photo":      # measured at its own size, drawn at the figure's width
+        factor = DISPLAY_WIDTH / base.width
+        big = base.resize((DISPLAY_WIDTH, round(base.height * factor)), Image.Resampling.LANCZOS)
+        shown = overlay(big, scaled(m, factor), lines, 0.0, verdict, guides=m.reliable,
+                        footer=PHOTO_FOOTER, band_below=True)
+    else:
+        shown = overlay(base, m, lines, 0.0, verdict, guides=m.reliable)
+    width = 600
+    shown.resize((width, round(shown.height * width / shown.width)),
+                 Image.Resampling.LANCZOS).save(out_dir / f"{ex.name}.png", optimize=True)
 
 
 def run(root: Path, stage1: Path, stage2: Path, out_dir: Path, threads: int = 4) -> list[Example]:
@@ -380,27 +418,58 @@ def run(root: Path, stage1: Path, stage2: Path, out_dir: Path, threads: int = 4)
     chain = Chain(stage1, stage2, threads)
     out_dir.mkdir(parents=True, exist_ok=True)
     for ex in EXAMPLES:
-        _render(ex, chain, ref, out_dir)
+        _render(ex, chain, ref, root, out_dir)
     write_summary(root, out_dir, chain.hashes, threads)
     return EXAMPLES
+
+
+def _photo_caveats(m: Measurement) -> str:
+    """Why the real-photo output is not evidence, as a Markdown list."""
+    width, height = m.size
+    items = [
+        "**Doğru değer yok.** Bu fotoğraf için aksiller eğimin gerçek değeri bilinmiyor; "
+        "yukarıdaki sayı zincirin çıktısıdır, bir karşılaştırma değil.",
+        f"**IMU yok.** Telefon sensörü olmadığından roll ve pitch 0 alındı. Piksel değerleri "
+        f"{width}×{height} kaynak çözünürlüğündedir.",
+        f"**Düşük çözünürlük.** {width}×{height} piksel, modele 640×640'a büyütülerek verildi; "
+        "uygulamada telefon fotoğrafı küçültülür.",
+        "**Eğitim verisinde.** Aynı kare, projenin yerel veri klasöründe (`raw/aag/train`, depoya "
+        "girmez) en az üç artırılmış kopyayla bulundu (renk ve kırpma farkıyla; gözle "
+        "doğrulandı). Bu kopyalarda yalnızca C7 ve sakrum etiketli. Aşama 1 eğitimi kısmi "
+        "etiketli görüntüleri de kullanır ([TEKNIK_DOKUMAN §5.3](tr/TEKNIK_DOKUMAN.md)); bu "
+        "yüzden model bu kareyi eğitimde görmüş olabilir ve sonuç genelleme göstermez. "
+        "Koronal sapmayı belirleyen C7 ve sakrum o kopyalarda etiketliydi; eğimi belirleyen "
+        "koltuk altı noktaları etiketli değildi.",
+    ]
+    outside = [(NAMES[i], e, dist) for i, (e, dist) in enumerate(m.gates)
+               if i >= 2 and (e > ENTROPY_MAX or dist > PEAK_DISTANCE_MAX)]
+    if outside:
+        listed = ", ".join(f"{n} (entropi {e:.2f}, tepe {dist:.1f} px)" for n, e, dist in outside)
+        item = ("**Kapı yalnızca iki koltuk altı noktasına bakar** (`OlcumZinciri.kt`). Kapının "
+                f"dışında kalan şu noktalar aynı eşikleri aşıyor: {listed}.")
+        if any(n in ("C7", "sakrum") for n, _, _ in outside):
+            item += " Koronal sapma C7 ve sakruma dayandığı için o sayıya kapı güvencesi verilmez."
+        items.append(item)
+    return "\n".join(f"- {i}" for i in items) + "\n"
 
 
 def write_summary(root: Path, out_dir: Path, hashes: dict[str, str], threads: int) -> None:
     """docs/ORNEKLER.md: the same examples with their numbers."""
     rel = out_dir.relative_to(root / "docs").as_posix()
     parts = [
-        "# Örnek çıktılar (sentetik)\n",
+        "# Örnek çıktılar\n",
         "<!-- `python -m skolyoz_metrics demo` ile ÜRETİLİR (model dosyaları gerekir). "
         "Elle düzenlemeyin. -->\n",
-        "Bu sayfadaki hiçbir görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** "
-        "kullanıldı (omuz eğimi çizimde bilinir). İşaretler, uygulamayla aynı zincirin "
-        "(`OlcumZinciri.kt`'nin Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki "
-        "çıktısıdır.\n",
+        "İlk beş görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı "
+        "(omuz eğimi çizimde bilinir). Son bölüm, README'nin başındaki tek **gerçek "
+        "fotoğrafı** gösterir. İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin "
+        "Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki çıktısıdır.\n",
         "> [!IMPORTANT]\n> Bunlar **başarım kanıtı değil, boru hattının ne yaptığının "
         "gösterimidir.** Modeller gerçek fotoğraflarla eğitildi; çizilmiş bir figürde çalışması "
         "gerçek fotoğraflarda doğru çalışacağı anlamına gelmez (örneğin 5° çizilen eğim 3.3° "
         "bulundu: bu figürde nokta hatası etiket gürültü tabanının çok üzerinde). Gerçek telefon "
-        "fotoğraflarında kararsızlık ölçüldü, bkz. [METRICS.md](METRICS.md).\n",
+        "fotoğraflarında kararsızlık ölçüldü, bkz. [METRICS.md](METRICS.md). Gerçek fotoğraf "
+        "bölümü de kanıt değildir; nedenleri o bölümde.\n",
         "> [!NOTE]\n> IMU roll düzeltmesi bu örneklerde **gösterilmiyor** (roll = 0): düzeltmenin "
         "işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`.\n",
         f"Modeller: `asama1.tflite` `{hashes['asama1.tflite'][:16]}…`, `asama2.tflite` "
@@ -428,6 +497,8 @@ def write_summary(root: Path, out_dir: Path, hashes: dict[str, str], threads: in
             rows.append(f"| {name} | ({c[0]:.1f}, {c[1]:.1f}) | ({pt[0]:.1f}, {pt[1]:.1f}) "
                         f"| {e:.2f} | {dist:.1f} |")
         parts.append("\n".join(rows) + "\n")
+        if ex.kind == "photo":
+            parts.append("Bu sayıları okurken:\n\n" + _photo_caveats(m))
     parts.append(
         "## Nasıl yeniden üretilir\n\n```bash\npip install -r requirements/bench.txt pillow\n"
         "python -m skolyoz_metrics demo --stage1 asama1.tflite --stage2 asama2.tflite\n```\n")

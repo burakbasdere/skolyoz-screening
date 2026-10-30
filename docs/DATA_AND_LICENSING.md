@@ -14,10 +14,13 @@ oraya eklediğiniz her görselin **gerçek bir kişi içermediğini kontrol edin
 
 **Tek istisna: referans görsel.** `docs/img/referans/skolyoz.webp` (README'nin başında), arkadan
 çekilmiş gerçek bir sırt fotoğrafıdır; yüz görünmez. `.gitignore` bu tek dosyayı ayrıca
-açıkça serbest bırakır (`*.webp` aksi halde dışarıda tutulur). **Kaynağı, lisansı ve çekilen
-kişinin (ya da velisinin) yayımlama rızası projede kayıtlı değil.** Depo herkese açık olduğundan
-bunlardan birini belgeleyin (kaynak + lisans, ya da yazılı rıza); belgelenemiyorsa dosyayı
-silin ve README'deki `<p align="center">` bloğunu kaldırın ya da sentetik bir görselle değiştirin.
+açıkça serbest bırakır (`*.webp` aksi halde dışarıda tutulur). Modellerin bu fotoğraf üzerindeki
+çıktısı `docs/img/ornekler/referans.png` (ve `docs/ORNEKLER.md`'deki son bölüm) da aynı kişiyi
+içerir; aynı koşullara tabidir. **Kaynağı, lisansı ve çekilen kişinin (ya da velisinin)
+yayımlama rızası projede kayıtlı değil.** Depo herkese açık olduğundan bunlardan birini
+belgeleyin (kaynak + lisans, ya da yazılı rıza); belgelenemiyorsa fotoğrafı ve `referans.png`'yi
+silin, README'lerin başındaki referans tablosunu kaldırın ya da sentetik bir görselle değiştirin,
+`skolyoz_metrics/demo.py` içindeki `referans` örneğini silip `demo`yu yeniden çalıştırın.
 Dosya bir kez geçmişe girdikten sonra silmek yeterli değildir (sonraki paragraf).
 
 Bir hasta görüntüsü commit edilirse bunu sızıntı sayın: sonraki bir commit'te silmek geçmişten

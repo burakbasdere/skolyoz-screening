@@ -84,9 +84,52 @@ def test_overlay_draws_guides_and_banner_without_models():
     assert hollow.tobytes() != drawn.tobytes()
 
 
-def test_the_examples_cover_every_rejection_path():
-    assert {e.kind for e in demo.EXAMPLES} == {"figure", "blur", "pitch", "blank"}
+def test_scaled_maps_the_refined_points_and_the_size_only():
+    gates = [(1.0, 2.0)] * 7
+    m = demo.Measurement((216, 228), 0.9, True, [(1.0, 2.0)] * 7, [(10.0, 20.0)] * 7, gates)
+    big = demo.scaled(m, 2.5)
+    assert big.size == (540, 570)
+    assert big.points[0] == (25.0, 50.0)
+    assert big.coarse == m.coarse and big.gates == m.gates
+    assert m.points[0] == (10.0, 20.0)                    # the original is untouched
+
+
+def test_overlay_can_put_its_text_below_the_frame():
+    img = demo.figure()
+    pts = [(250 + 10 * k, 400 + 60 * k) for k in range(7)]
+    m = demo.Measurement(img.size, 0.9, True, pts, pts, [(1.0, 1.0)] * 7)
+    inside = demo.overlay(img, m, ["a", "b"], 0.0, "V")
+    below = demo.overlay(img, m, ["a", "b"], 0.0, "V", footer="X", band_below=True)
+    assert inside.size == img.size
+    assert below.width == img.width
+    assert below.height == img.height + 46 * (1 + 2 + 1) + 24      # verdict + 2 lines + footer
+    assert below.getpixel((5, img.height + 5)) == (0, 0, 0)         # the band is under the frame
+    corner = img.convert("RGB").getpixel((5, 5))
+    assert below.getpixel((5, 5)) == corner                         # no banner over the frame
+    assert inside.getpixel((5, 5)) != corner                        # the inside variant has one
+
+
+def test_the_examples_cover_every_path():
+    assert {e.kind for e in demo.EXAMPLES} == {"figure", "blur", "pitch", "blank", "photo"}
     assert len({e.name for e in demo.EXAMPLES}) == len(demo.EXAMPLES)
+
+
+def test_the_photo_example_points_at_a_file_that_ships_with_the_repo(root):
+    photos = [e for e in demo.EXAMPLES if e.kind == "photo"]
+    assert len(photos) == 1 and (root / photos[0].source).is_file()
+
+
+def test_photo_caveats_name_the_points_the_gate_does_not_cover():
+    ok = (1.0, 1.0)
+    gates = [ok, ok, ok, (3.5, 11.0), ok, ok, (2.6, 12.0)]
+    m = demo.Measurement((216, 228), 0.97, True, [(0.0, 0.0)] * 7, [(0.0, 0.0)] * 7, gates)
+    text = demo._photo_caveats(m)
+    assert "216×228" in text
+    assert "omurga 1 (entropi 3.50" in text and "sakrum (entropi 2.60" in text
+    assert "C7 (entropi" not in text                       # within both thresholds
+    assert "Koronal sapma C7 ve sakruma dayandığı" in text
+    clean = demo._photo_caveats(demo.Measurement((216, 228), 0.97, True, [], [], [ok] * 7))
+    assert "Kapı yalnızca" not in clean
 
 
 def test_pitch_example_is_rejected_by_the_reference_gate(root):

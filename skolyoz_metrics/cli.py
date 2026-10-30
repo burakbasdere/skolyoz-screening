@@ -187,7 +187,8 @@ def build_parser() -> argparse.ArgumentParser:
     common(tfl)
     tfl.set_defaults(func=cmd_bench_tflite)
 
-    demo_p = sub.add_parser("demo", help="sentetik örnek figürde gerçek modellerle örnek çıktılar")
+    demo_p = sub.add_parser(
+        "demo", help="çizilmiş figürde ve referans fotoğrafta gerçek modellerle örnek çıktılar")
     demo_p.add_argument("--stage1", type=Path, required=True, help="asama1.tflite")
     demo_p.add_argument("--stage2", type=Path, required=True, help="asama2.tflite")
     demo_p.add_argument("--threads", type=int, default=4)

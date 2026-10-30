@@ -33,5 +33,12 @@
     "confidence": 0.0013,
     "angle": null,
     "rejected": "ki\u015fi bulunamad\u0131 (g\u00fcven 0.00 < 0.25)"
+  },
+  {
+    "name": "referans",
+    "found": true,
+    "confidence": 0.9687,
+    "angle": 3.3799692626498006,
+    "rejected": null
   }
 ]

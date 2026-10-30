@@ -1,11 +1,11 @@
-# Örnek çıktılar (sentetik)
+# Örnek çıktılar
 
 <!-- `python -m skolyoz_metrics demo` ile ÜRETİLİR (model dosyaları gerekir). Elle düzenlemeyin. -->
 
-Bu sayfadaki hiçbir görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı (omuz eğimi çizimde bilinir). İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki çıktısıdır.
+İlk beş görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı (omuz eğimi çizimde bilinir). Son bölüm, README'nin başındaki tek **gerçek fotoğrafı** gösterir. İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki çıktısıdır.
 
 > [!IMPORTANT]
-> Bunlar **başarım kanıtı değil, boru hattının ne yaptığının gösterimidir.** Modeller gerçek fotoğraflarla eğitildi; çizilmiş bir figürde çalışması gerçek fotoğraflarda doğru çalışacağı anlamına gelmez (örneğin 5° çizilen eğim 3.3° bulundu: bu figürde nokta hatası etiket gürültü tabanının çok üzerinde). Gerçek telefon fotoğraflarında kararsızlık ölçüldü, bkz. [METRICS.md](METRICS.md).
+> Bunlar **başarım kanıtı değil, boru hattının ne yaptığının gösterimidir.** Modeller gerçek fotoğraflarla eğitildi; çizilmiş bir figürde çalışması gerçek fotoğraflarda doğru çalışacağı anlamına gelmez (örneğin 5° çizilen eğim 3.3° bulundu: bu figürde nokta hatası etiket gürültü tabanının çok üzerinde). Gerçek telefon fotoğraflarında kararsızlık ölçüldü, bkz. [METRICS.md](METRICS.md). Gerçek fotoğraf bölümü de kanıt değildir; nedenleri o bölümde.
 
 > [!NOTE]
 > IMU roll düzeltmesi bu örneklerde **gösterilmiyor** (roll = 0): düzeltmenin işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`.
@@ -81,6 +81,32 @@ Karar: ölçüm reddedildi (|pitch| 11.0° > 8°).
 Boş zemin: Aşama 1 güveni eşiğin (0.25) altında kalır, ölçüm yapılmaz.
 
 Aşama 1 en yüksek güven: 0.001 (eşik 0.25). Ölçüm yapılmadı.
+
+## Gerçek fotoğraf: README'deki referans görsel
+
+![Gerçek fotoğraf: README'deki referans görsel](img/ornekler/referans.png)
+
+README'nin başındaki referans fotoğraf, çizim yerine **gerçek bir sırt fotoğrafı**; gönderilen modellerden olduğu gibi geçirildi. Sayılar bir başarım ölçüsü değildir; nedenleri sayıların altında.
+
+Aksiller eğim: **+3.38°** · koronal sapma: +2.0 px (+0.64°) · güven kapısı: geçti · Aşama 1 güveni 0.969
+
+| Nokta | Kaba (640 uzayı) | Rafine (orijinal çözünürlük) | Entropi | Tepe uzaklığı (px) |
+|---|---|---|---|---|
+| sağ koltuk altı | (552.6, 208.3) | (197.0, 75.0) | 1.92 | 4.4 |
+| sol koltuk altı | (111.4, 222.6) | (41.4, 84.1) | 1.59 | 3.4 |
+| C7 | (330.9, 55.0) | (109.9, 13.0) | 2.05 | 11.1 |
+| omurga 1 | (334.9, 175.5) | (113.1, 62.1) | 3.49 | 11.3 |
+| omurga 2 | (332.3, 309.6) | (119.4, 104.4) | 2.12 | 6.9 |
+| omurga 3 | (319.7, 436.4) | (106.7, 151.1) | 2.59 | 4.4 |
+| sakrum | (324.6, 557.1) | (107.9, 195.5) | 2.61 | 12.4 |
+
+Bu sayıları okurken:
+
+- **Doğru değer yok.** Bu fotoğraf için aksiller eğimin gerçek değeri bilinmiyor; yukarıdaki sayı zincirin çıktısıdır, bir karşılaştırma değil.
+- **IMU yok.** Telefon sensörü olmadığından roll ve pitch 0 alındı. Piksel değerleri 216×228 kaynak çözünürlüğündedir.
+- **Düşük çözünürlük.** 216×228 piksel, modele 640×640'a büyütülerek verildi; uygulamada telefon fotoğrafı küçültülür.
+- **Eğitim verisinde.** Aynı kare, projenin yerel veri klasöründe (`raw/aag/train`, depoya girmez) en az üç artırılmış kopyayla bulundu (renk ve kırpma farkıyla; gözle doğrulandı). Bu kopyalarda yalnızca C7 ve sakrum etiketli. Aşama 1 eğitimi kısmi etiketli görüntüleri de kullanır ([TEKNIK_DOKUMAN §5.3](tr/TEKNIK_DOKUMAN.md)); bu yüzden model bu kareyi eğitimde görmüş olabilir ve sonuç genelleme göstermez. Koronal sapmayı belirleyen C7 ve sakrum o kopyalarda etiketliydi; eğimi belirleyen koltuk altı noktaları etiketli değildi.
+- **Kapı yalnızca iki koltuk altı noktasına bakar** (`OlcumZinciri.kt`). Kapının dışında kalan şu noktalar aynı eşikleri aşıyor: omurga 1 (entropi 3.49, tepe 11.3 px), omurga 3 (entropi 2.59, tepe 4.4 px), sakrum (entropi 2.61, tepe 12.4 px). Koronal sapma C7 ve sakruma dayandığı için o sayıya kapı güvencesi verilmez.
 
 ## Nasıl yeniden üretilir
 

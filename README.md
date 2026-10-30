@@ -12,11 +12,17 @@ doğan hata telefonun kendi IMU sensörüyle giderilir.
 ![On-device](https://img.shields.io/badge/inference-on--device-0A7EA4)
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)
 
-<p align="center">
-  <img src="docs/img/referans/skolyoz.webp" width="216" alt="Skolyozlu bir sırtın arkadan görünümü: omuz, kürek kemiği ve bel hizasında yüzey asimetrisi"><br>
-  <sub><b>Referans görsel:</b> skolyozlu bir sırtın arkadan görünümü. Uygulamanın ölçtüğü, bu tür görünür yüzey asimetrisidir;
-  radyografik Cobb açısı değildir. Görselin kaynağı ve kullanım izni: <a href="docs/DATA_AND_LICENSING.md">docs/DATA_AND_LICENSING.md</a> §1.</sub>
-</p>
+<table>
+<tr>
+<td align="center" valign="top"><img src="docs/img/referans/skolyoz.webp" width="250" alt="Skolyozlu bir sırtın arkadan görünümü: omuz, kürek kemiği ve bel hizasında yüzey asimetrisi"><br><sub><b>Referans fotoğraf</b><br>216×228 piksel</sub></td>
+<td align="center" valign="top"><img src="docs/img/ornekler/referans.png" width="250" alt="Aynı fotoğraf üzerinde modellerin bulduğu yedi nokta; aksiller eğim +3.38°, koronal sapma +0.64°"><br><sub><b>Modellerin çıktısı</b><br>eğim +3.38°, kapı geçti</sub></td>
+</tr>
+</table>
+
+<sub>Solda referans fotoğraf, sağda bu depodaki modellerin onun üzerindeki çıktısı. Bu **tek bir örnektir, başarım kanıtı değildir**:
+doğru değeri bilinmiyor ve aynı kare projenin eğitim görüntüleri arasında bulundu ([docs/ORNEKLER.md](docs/ORNEKLER.md)).
+Uygulamanın ölçtüğü, bu tür görünür yüzey asimetrisidir; radyografik Cobb açısı değildir.
+Fotoğrafın kaynağı ve kullanım izni: [docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md) §1.</sub>
 
 > [!WARNING]
 > **Bu bir araştırma yazılımı ve tarama yardımcısıdır; tanı aracı değildir.**
