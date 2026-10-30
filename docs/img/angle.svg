@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="386" viewBox="0 0 760 386" role="img" aria-labelledby="t d" font-family='system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif'>
+<title id="t">Açı hatası ve sinyal büyüklüğü</title>
+<desc id="d">Aksiller eğim: medyan hata 0.271°, p90 1.237°, sinyal 2.21°; Koronal denge: medyan hata 1.292°, p90 3.385°, sinyal 1.71°</desc>
+<rect x="0.5" y="0.5" width="759" height="385" rx="8" fill="#fcfcfb" stroke="#e1e0d9"/>
+<text x="24.0" y="32.0" font-size="16" fill="#0b0b0b" text-anchor="start" font-weight="600">Aksiller eğimde hata, sinyalin çok altında; koronal dengede sınırda</text>
+<text x="24.0" y="52.0" font-size="12" fill="#52514e" text-anchor="start">Hata küçük ve sinyal büyükse ölçüm anlamlıdır. Çubuk ne kadar kısaysa o kadar iyi (sinyal hariç).</text>
+<rect x="24.0" y="75.0" width="10" height="10" rx="2" fill="#2a78d6"/>
+<text x="39.0" y="84.0" font-size="12" fill="#52514e" text-anchor="start">Hata, medyan</text>
+<rect x="138.2" y="75.0" width="10" height="10" rx="2" fill="#eb6834"/>
+<text x="153.2" y="84.0" font-size="12" fill="#52514e" text-anchor="start">Hata, p90</text>
+<rect x="232.6" y="75.0" width="10" height="10" rx="2" fill="#898781"/>
+<text x="247.6" y="84.0" font-size="12" fill="#52514e" text-anchor="start">Sinyal (ölçülen şeyin büyüklüğü)</text>
+<line x1="154.0" y1="104.0" x2="154.0" y2="304.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="round"/>
+<text x="154.0" y="320.0" font-size="11" fill="#898781" text-anchor="middle">0</text>
+<line x1="274.0" y1="104.0" x2="274.0" y2="304.0" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="274.0" y="320.0" font-size="11" fill="#898781" text-anchor="middle">1</text>
+<line x1="394.0" y1="104.0" x2="394.0" y2="304.0" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="394.0" y="320.0" font-size="11" fill="#898781" text-anchor="middle">2</text>
+<line x1="514.0" y1="104.0" x2="514.0" y2="304.0" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="514.0" y="320.0" font-size="11" fill="#898781" text-anchor="middle">3</text>
+<line x1="634.0" y1="104.0" x2="634.0" y2="304.0" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="634.0" y="320.0" font-size="11" fill="#898781" text-anchor="middle">4</text>
+<text x="24.0" y="152.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600">Aksiller eğim</text>
+<path d="M154.0,108.0H182.5A4,4 0 0 1 186.5,112.0V126.0A4,4 0 0 1 182.5,130.0H154.0Z" fill="#2a78d6"/>
+<text x="194.5" y="123.0" font-size="12" fill="#0b0b0b" text-anchor="start">0.271°</text>
+<path d="M154.0,136.0H298.4A4,4 0 0 1 302.4,140.0V154.0A4,4 0 0 1 298.4,158.0H154.0Z" fill="#eb6834"/>
+<text x="310.4" y="151.0" font-size="12" fill="#0b0b0b" text-anchor="start">1.237°</text>
+<path d="M154.0,164.0H415.2A4,4 0 0 1 419.2,168.0V182.0A4,4 0 0 1 415.2,186.0H154.0Z" fill="#898781"/>
+<text x="427.2" y="179.0" font-size="12" fill="#0b0b0b" text-anchor="start">2.21°</text>
+<text x="662.0" y="144.0" font-size="11" fill="#898781" text-anchor="start">hata / sinyal</text>
+<text x="662.0" y="166.0" font-size="20" fill="#0b0b0b" text-anchor="start" font-weight="600">0.12</text>
+<text x="24.0" y="262.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="600">Koronal denge</text>
+<path d="M154.0,218.0H305.0A4,4 0 0 1 309.0,222.0V236.0A4,4 0 0 1 305.0,240.0H154.0Z" fill="#2a78d6"/>
+<text x="317.0" y="233.0" font-size="12" fill="#0b0b0b" text-anchor="start">1.292°</text>
+<path d="M154.0,246.0H556.2A4,4 0 0 1 560.2,250.0V264.0A4,4 0 0 1 556.2,268.0H154.0Z" fill="#eb6834"/>
+<text x="568.2" y="261.0" font-size="12" fill="#0b0b0b" text-anchor="start">3.385°</text>
+<path d="M154.0,274.0H355.2A4,4 0 0 1 359.2,278.0V292.0A4,4 0 0 1 355.2,296.0H154.0Z" fill="#898781"/>
+<text x="367.2" y="289.0" font-size="12" fill="#0b0b0b" text-anchor="start">1.71°</text>
+<text x="662.0" y="254.0" font-size="11" fill="#898781" text-anchor="start">hata / sinyal</text>
+<text x="662.0" y="276.0" font-size="20" fill="#0b0b0b" text-anchor="start" font-weight="600">0.76</text>
+<text x="24.0" y="357.0" font-size="11" fill="#898781" text-anchor="start">Aşama 2, benzetilmiş ±35 px kaba noktalarla; uçtan uca ya da cihaz üstü ölçüm değil.</text>
+<text x="24.0" y="372.0" font-size="11" fill="#898781" text-anchor="start">Durum: raporlanan · n = 337 görüntü · tablo: docs/METRICS.md</text>
+</svg>

@@ -110,11 +110,11 @@ def run(
     return {
         "results": results,
         "notes": [
-            "Synthetic random input; Interpreter.invoke() plus set_tensor only "
-            "(no image decoding, resizing or post-processing).",
-            f"pipeline = 1 x stage1 + {N_LANDMARKS} x stage2, run sequentially, "
-            "mirroring OlcumZinciri.kt.",
-            "Measured on a desktop/CI CPU through the Python TFLite runtime; this is not "
-            "Android latency.",
+            "Sentetik rastgele girdi; yalnızca Interpreter.invoke() ve set_tensor "
+            "(görüntü çözme, yeniden boyutlandırma ve son işleme yok).",
+            f"pipeline = 1 x stage1 + {N_LANDMARKS} x stage2; OlcumZinciri.kt'yi yansıtacak "
+            "şekilde sırayla çalıştırılır.",
+            "Masaüstü/CI CPU'sunda Python TFLite çalışma zamanıyla ölçüldü; Android gecikmesi "
+            "değildir.",
         ],
     }

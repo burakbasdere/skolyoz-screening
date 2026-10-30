@@ -1,30 +1,30 @@
-# Security and privacy policy
+# Güvenlik ve gizlilik politikası
 
-## Reporting
+## Bildirim
 
-Please report vulnerabilities, and especially **any personal health data found
-in the repository or its history**, privately — use GitHub's "Report a
-vulnerability" (private advisory) on this repository, not a public issue.
-Include what you found and where, but do not paste the data itself.
+Güvenlik açıklarını ve özellikle **depoda ya da geçmişinde bulunan kişisel sağlık verisini**
+lütfen gizlice bildirin: herkese açık issue değil, bu depodaki GitHub "Report a vulnerability"
+(özel advisory) özelliğini kullanın. Neyi ve nerede bulduğunuzu yazın, ama verinin kendisini
+yapıştırmayın.
 
-You can expect an acknowledgement within a few days. This is a small research
-project, so there is no bug bounty and no formal SLA.
+Birkaç gün içinde yanıt bekleyebilirsiniz. Bu küçük bir araştırma projesidir; ödül programı ya
+da resmî bir yanıt süresi (SLA) yoktur.
 
-## Scope
+## Kapsam
 
-- The Android app and everything under `android/`.
-- The Python tooling under `skolyoz_metrics/`.
-- Accidentally published patient images, labels or model weights.
+- Android uygulaması ve `android/` altındaki her şey.
+- `skolyoz_metrics/` altındaki Python araçları.
+- Yanlışlıkla yayımlanmış hasta görüntüleri, etiketleri ya da model ağırlıkları.
 
-## Design choices that matter for privacy
+## Gizlilik açısından önemli tasarım kararları
 
-- Inference is fully on-device; the app requests no `INTERNET` permission.
-- Backups are disabled (`allowBackup="false"`).
-- Debug builds write diagnostic images to storage. Do **not** run a debug build
-  on real subjects.
-- Image files and model weights are excluded by `.gitignore`.
+- Çıkarım tamamen cihaz üzerindedir; uygulama `INTERNET` izni istemez.
+- Yedekleme kapalıdır (`allowBackup="false"`).
+- Debug derlemeleri teşhis görüntülerini depolamaya yazar. Debug derlemesini gerçek kişilerde
+  **kullanmayın**.
+- Görüntü dosyaları ve model ağırlıkları `.gitignore` ile dışarıda tutulur.
 
-## Medical disclaimer
+## Tıbbi uyarı
 
-This is research software and a screening aid. It is not a diagnostic tool and
-has not been validated on patients or cleared as a medical device.
+Bu bir araştırma yazılımı ve tarama yardımcısıdır. Tanı aracı değildir; hastalar üzerinde
+doğrulanmamış ve tıbbi cihaz olarak onaylanmamıştır.

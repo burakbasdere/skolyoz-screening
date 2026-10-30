@@ -62,7 +62,7 @@ def test_consistency_requires_exactly_one_selected_export(results):
 
 def test_check_command_passes_on_the_repository(root, capsys):
     assert main(["--root", str(root), "check"]) == 0
-    assert "OK" in capsys.readouterr().out
+    assert "TAMAM" in capsys.readouterr().out
 
 
 def test_check_command_detects_stale_generated_docs(root, tmp_path, capsys):
@@ -72,9 +72,10 @@ def test_check_command_detects_stale_generated_docs(root, tmp_path, capsys):
     copy = tmp_path / "repo"
     (copy / "docs").mkdir(parents=True)
     shutil.copytree(root / "metrics", copy / "metrics")
-    for name in ("README.md", "README.tr.md"):
+    for name in ("README.md", "README.en.md"):
         shutil.copy(root / name, copy / name)
     shutil.copy(root / "docs" / "METRICS.md", copy / "docs" / "METRICS.md")
+    shutil.copytree(root / "docs" / "img", copy / "docs" / "img")
     assert main(["--root", str(copy), "check"]) == 0
 
     data = json.loads((copy / "metrics" / "results.json").read_text(encoding="utf-8"))
@@ -82,4 +83,4 @@ def test_check_command_detects_stale_generated_docs(root, tmp_path, capsys):
     (copy / "metrics" / "results.json").write_text(json.dumps(data), encoding="utf-8")
     capsys.readouterr()
     assert main(["--root", str(copy), "check"]) == 1
-    assert "stale" in capsys.readouterr().out
+    assert "güncel değil" in capsys.readouterr().out

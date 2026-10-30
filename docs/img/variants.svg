@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="414" viewBox="0 0 760 414" role="img" aria-labelledby="t d" font-family='system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif'>
+<title id="t">Dışa aktarma varyantları: boyut ve açı hatası</title>
+<desc id="d">float16: 6.4 MB, 0.417°; dynamic_range_quant: 3.59 MB, 0.463°; float32: 12.57 MB, 0.412°; int8_int16_activations: 3.79 MB, 1.644°</desc>
+<rect x="0.5" y="0.5" width="759" height="413" rx="8" fill="#fcfcfb" stroke="#e1e0d9"/>
+<text x="24.0" y="32.0" font-size="16" fill="#0b0b0b" text-anchor="start" font-weight="600">float16: boyut yarıya iniyor, doğruluk neredeyse aynı kalıyor</text>
+<text x="24.0" y="52.0" font-size="12" fill="#52514e" text-anchor="start">Her nokta bir TFLite varyantı; sol-alt daha iyi (küçük ve doğru). 2 landmark'lı modeller, n = 50.</text>
+<line x1="80.0" y1="314.0" x2="680.0" y2="314.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="round"/>
+<text x="72.0" y="318.0" font-size="11" fill="#898781" text-anchor="end">0°</text>
+<line x1="80.0" y1="256.5" x2="680.0" y2="256.5" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="72.0" y="260.5" font-size="11" fill="#898781" text-anchor="end">0.5°</text>
+<line x1="80.0" y1="199.0" x2="680.0" y2="199.0" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="72.0" y="203.0" font-size="11" fill="#898781" text-anchor="end">1°</text>
+<line x1="80.0" y1="141.5" x2="680.0" y2="141.5" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="72.0" y="145.5" font-size="11" fill="#898781" text-anchor="end">1.5°</text>
+<line x1="80.0" y1="84.0" x2="680.0" y2="84.0" stroke="#e1e0d9" stroke-width="1" stroke-linecap="round"/>
+<text x="72.0" y="88.0" font-size="11" fill="#898781" text-anchor="end">2°</text>
+<text x="80.0" y="331.0" font-size="11" fill="#898781" text-anchor="middle">0</text>
+<text x="165.7" y="331.0" font-size="11" fill="#898781" text-anchor="middle">2</text>
+<text x="251.4" y="331.0" font-size="11" fill="#898781" text-anchor="middle">4</text>
+<text x="337.1" y="331.0" font-size="11" fill="#898781" text-anchor="middle">6</text>
+<text x="422.9" y="331.0" font-size="11" fill="#898781" text-anchor="middle">8</text>
+<text x="508.6" y="331.0" font-size="11" fill="#898781" text-anchor="middle">10</text>
+<text x="594.3" y="331.0" font-size="11" fill="#898781" text-anchor="middle">12</text>
+<text x="680.0" y="331.0" font-size="11" fill="#898781" text-anchor="middle">14 MB</text>
+<line x1="80.0" y1="270.3" x2="680.0" y2="270.3" stroke="#52514e" stroke-width="1" stroke-linecap="round"/>
+<text x="676.0" y="286.3" font-size="11" fill="#52514e" text-anchor="end">PyTorch referansı 0.38°</text>
+<circle cx="233.9" cy="260.8" r="5" fill="#898781" stroke="#fcfcfb" stroke-width="2"/>
+<text x="233.9" y="232.8" font-size="11" fill="#0b0b0b" text-anchor="middle">dinamik aralık</text>
+<text x="233.9" y="246.8" font-size="11" fill="#52514e" text-anchor="middle">3.59 MB · 0.463°</text>
+<circle cx="242.4" cy="124.9" r="5" fill="#898781" stroke="#fcfcfb" stroke-width="2"/>
+<text x="242.4" y="96.9" font-size="11" fill="#0b0b0b" text-anchor="middle">INT8 + int16 aktivasyon</text>
+<text x="242.4" y="110.9" font-size="11" fill="#52514e" text-anchor="middle">3.79 MB · 1.644°</text>
+<circle cx="354.3" cy="266.0" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/>
+<text x="354.3" y="238.0" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="600">float16 (kullanılan)</text>
+<text x="354.3" y="252.0" font-size="11" fill="#52514e" text-anchor="middle">6.4 MB · 0.417°</text>
+<circle cx="618.7" cy="266.6" r="5" fill="#898781" stroke="#fcfcfb" stroke-width="2"/>
+<text x="618.7" y="238.6" font-size="11" fill="#0b0b0b" text-anchor="middle">float32</text>
+<text x="618.7" y="252.6" font-size="11" fill="#52514e" text-anchor="middle">12.57 MB · 0.412°</text>
+<text x="380.0" y="348.0" font-size="11" fill="#52514e" text-anchor="middle">Model boyutu (MB)</text>
+<text x="24.0" y="70.0" font-size="11" fill="#52514e" text-anchor="start">Medyan açı hatası (°)</text>
+<text x="80.0" y="362.0" font-size="11" fill="#52514e" text-anchor="start">Tam tamsayı INT8 (3.58 MB): 50 görüntünün hiçbirinde tespit yok, bu yüzden çizilemedi.</text>
+<text x="24.0" y="400.0" font-size="11" fill="#898781" text-anchor="start">Durum: raporlanan · n = 50 görüntü · tablo: docs/METRICS.md</text>
+</svg>

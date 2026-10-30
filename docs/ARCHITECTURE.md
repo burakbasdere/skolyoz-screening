@@ -1,106 +1,102 @@
-# Architecture
+# Mimari
 
-This page explains how a photograph becomes a number, and which decisions were
-made for a measured reason. Numbers are deliberately **not** repeated here;
-they live in [METRICS.md](METRICS.md) so there is a single place to keep right.
-The full research narrative (in Turkish) is in
-[tr/TEKNIK_DOKUMAN.md](tr/TEKNIK_DOKUMAN.md) and
-[tr/MOBIL_YAPILACAKLAR.md](tr/MOBIL_YAPILACAKLAR.md).
+Bu sayfa, bir fotoğrafın nasıl bir sayıya dönüştüğünü ve hangi kararların ölçüme
+dayanılarak verildiğini anlatır. Sayılar bilerek burada **tekrarlanmaz**; doğru tutulacak
+tek yer [METRICS.md](METRICS.md) olsun diye orada durur. Araştırmanın tam anlatımı
+[tr/TEKNIK_DOKUMAN.md](tr/TEKNIK_DOKUMAN.md) ve
+[tr/MOBIL_YAPILACAKLAR.md](tr/MOBIL_YAPILACAKLAR.md) dosyalarındadır.
 
-## What is measured
+## Ne ölçülüyor
 
-| Quantity | Definition |
+| Büyüklük | Tanım |
 |---|---|
-| **Axillary tilt** | Angle of the line through the left and right armpit points relative to *gravity horizontal*: `atan2(Δy, \|Δx\|) − roll`. Positive means the person's right shoulder is higher. |
-| **Coronal balance** | Horizontal offset of C7 (vertebra prominens) from the plumb line dropped from the sacrum, as an angle against trunk height — the photographic analogue of the clinical C7 plumb-line test. |
+| **Aksiller eğim** | Sol ve sağ koltuk altı noktalarını birleştiren doğrunun *yerçekimi yatayına* göre açısı: `atan2(Δy, \|Δx\|) − roll`. Pozitif değer, kişinin sağ omzunun yüksek olduğunu gösterir. |
+| **Koronal denge** | C7 (vertebra prominens) noktasının, sakrumdan indirilen şakül hattına yatay sapmasının gövde boyuna göre açısı — klinik muayenedeki C7 şakül testinin fotoğraftaki karşılığı. |
 
-Neither is a Cobb angle. Cobb is defined on a radiograph; these are surface
-indicators. Compensated curves can leave the shoulders level, and leg-length
-or muscle asymmetry can tilt them without any curve.
+İkisi de Cobb açısı değildir. Cobb açısı radyografide tanımlanır; bunlar yüzey
+göstergeleridir. Kompanse eğriler omuzları düz bırakabilir, bacak boyu ya da kas
+asimetrisi de eğri olmadan omuzları eğebilir.
 
-## Pipeline
+## Boru hattı
 
 ```
-CameraX photo + gravity vector sampled at the shutter timestamp
-  └─ pitch gate: |pitch| > 8° → shot rejected (perspective would bias the angle)
-resize to 640×640 (stretch, not letterbox)            ← must match training
-Stage 1  YOLO11n-pose  → 7 coarse landmarks (+ confidence)
-Stage 2  MobileNetV3-small + heatmap head, run once per landmark
-         128×128 crop (black padding at the border) → 64×64 heatmap(s) → soft-argmax
-confidence gate: heatmap entropy and peak-to-centroid distance
-map landmarks back to the ORIGINAL resolution
-measurement (pure geometry) + IMU roll correction
+CameraX fotoğrafı + deklanşör zaman damgasında örneklenen yerçekimi vektörü
+  └─ pitch kapısı: |pitch| > 8° → çekim reddedilir (perspektif açıyı bozar)
+640×640'a yeniden boyutlandırma (germe, letterbox değil)      ← eğitimle aynı olmalı
+Aşama 1  YOLO11n-pose  → 7 kaba landmark (+ güven)
+Aşama 2  MobileNetV3-small + ısı haritası başlığı, landmark başına bir kez
+         128×128 kırpım (kenarda siyah dolgu) → 64×64 ısı haritası → soft-argmax
+güven kapısı: ısı haritası entropisi ve tepe-ağırlık merkezi uzaklığı
+landmark'ları ORİJİNAL çözünürlüğe geri çevir
+ölçüm (saf geometri) + IMU roll düzeltmesi
 ```
 
-### The seven landmarks and four visual types
+### Yedi landmark ve dört görsel tip
 
-| Index | Landmark | Stage-2 type |
+| İndeks | Landmark | Aşama 2 tipi |
 |---|---|---|
-| 0 / 1 | right / left axilla | 0 — axilla (mirror-symmetric, shared) |
+| 0 / 1 | sağ / sol koltuk altı | 0 — koltuk altı (ayna simetrik, ortak) |
 | 2 | C7 | 1 |
-| 3 / 4 / 5 | three spine points | 2 — spine (same texture, shared) |
-| 6 | sacrum | 3 |
+| 3 / 4 / 5 | üç omurga noktası | 2 — omurga (aynı doku, ortak) |
+| 6 | sakrum | 3 |
 
-Sharing weights across landmarks that look alike gives each type more training
-signal; the Stage-2 network emits one heatmap channel per *type* and the loss
-reads only the channel of the sample's own type. Stage 1 outputs
-`(1, 26, 8400)`: 4 box values, 1 confidence and 7 × (x, y, visibility), already
-decoded to pixels, so the app needs no anchor or stride logic and takes the
-highest-confidence candidate instead of running NMS (one person per frame).
+Benzer görünen landmark'lar arasında ağırlık paylaşmak her tipe daha çok eğitim sinyali
+verir: Aşama 2 ağı *tip* başına bir ısı haritası kanalı üretir ve kayıp yalnızca örneğin
+kendi tipinin kanalından hesaplanır. Aşama 1 çıktısı `(1, 26, 8400)`'dür: 4 kutu değeri,
+1 güven ve 7 × (x, y, görünürlük); değerler zaten piksele çözülmüştür, bu yüzden uygulamada
+anchor ya da stride mantığı yoktur ve (karede tek kişi beklendiği için) NMS yerine en
+yüksek güvenli aday alınır.
 
-## Why two stages
+## Neden iki aşama
 
-A single YOLO-pose network that regresses coordinates directly showed the same
-error on training, validation and test data. It was not overfitting; the
-stride-8/16/32 output grid simply cannot localise to the needed precision.
-Cropping around the coarse point and predicting a heatmap with a soft-argmax
-turns a coarse regression problem into a fine one. The measured gain is in
-[METRICS.md §1.4](METRICS.md#14-what-the-second-stage-buys).
+Koordinatı doğrudan regrese eden tek bir YOLO-pose ağı, eğitim, doğrulama ve test
+kümelerinde aynı hatayı verdi. Aşırı öğrenme değildi; stride 8/16/32 çıktı ızgarası
+istenen hassasiyette yerelleştirme yapamıyor. Kaba noktanın çevresini kırpıp ısı haritası
+ile soft-argmax kullanmak, kaba bir regresyon problemini ince bir probleme çeviriyor.
+Ölçülen kazanç: [METRICS.md §1.4](METRICS.md).
 
-## Pitfalls that cost time (each was caught by a measurement or a test)
+## Zaman kaybettiren tuzaklar (her biri bir ölçüm ya da testle yakalandı)
 
-1. **No horizontal flip, no rotation augmentation on Stage 1.** Left/right and
-   orientation *are* the signal. (Stage 2 flips crops only for the mirror-symmetric
-   axilla type.)
-2. **Never take left/right from a pose model.** COCO pose models assign anatomical
-   sides correctly on back views only ≈12 % of the time — systematically
-   inverted. The rule is positional: the person's right is on the right of the frame.
-3. **Reproduce the training-time resize exactly.** The data was stretched to
-   640×640 with anti-aliasing. `Bitmap.createScaledBitmap` aliases and added a
-   0.29° error, so the Pillow bilinear algorithm was ported to Kotlin
-   (`OnIsleme.kucultBilinear`) and checked against Pillow to ±1 pixel.
-4. **Compute the angle at the original resolution.** Stretching distorts angles;
-   measuring in 640×640 space of a 4:3 photo costs ~25 %.
-5. **Channel order and normalisation differ per stage.** Ultralytics assumes BGR
-   for NumPy arrays; Stage 1 takes `/255`, Stage 2 takes ImageNet mean/std.
-6. **`mAP` is meaningless here.** Ultralytics uses OKS sigmas of `1/nkpt` for
-   non-COCO keypoints, so 40 px errors still scored 0.995. Read pixel and degree
-   errors.
-7. **`kobj=0` when training with partially labelled landmarks.** Unlabelled but
-   visible points are marked `v=0`; the visibility head would learn "absent".
-8. **Interpolate the IMU sample, don't pick the nearest.** At a 19 ms sensor
-   period a hand rotating at 30 °/s adds ≈0.3° of avoidable error.
-9. **A dispersed heatmap makes soft-argmax confidently wrong.** Hence the
-   confidence gate: it converts silent errors into visible rejections.
+1. **Aşama 1'de yatay flip ve döndürme augmentasyonu yok.** Sağ/sol ve yönelim sinyalin
+   kendisidir. (Aşama 2 yalnızca ayna simetrik koltuk altı tipinde kırpımları çevirir.)
+2. **Sağ/sol'u asla duruş modelinden alma.** COCO duruş modelleri arkadan çekimde anatomik
+   tarafı yalnızca ≈%12 doğru atar — rastgele değil, sistematik ters. Kural konumsaldır:
+   kişinin sağı karede sağdadır.
+3. **Eğitimdeki boyutlandırmayı birebir tekrarla.** Veri, kenar yumuşatmayla 640×640'a
+   gerilmişti. `Bitmap.createScaledBitmap` aliasing bırakıp 0.29° hata ekledi; bu yüzden
+   Pillow bilineer algoritması Kotlin'e portlandı (`OnIsleme.kucultBilinear`) ve
+   Pillow'a karşı ±1 piksel doğrulandı.
+4. **Açıyı orijinal çözünürlükte hesapla.** Germe açıları bozar; 4:3 bir fotoğrafta
+   640×640 uzayında ölçmek ≈%25 hata yapar.
+5. **Kanal sırası ve normalizasyon aşamaya göre farklı.** Ultralytics NumPy dizilerinde BGR
+   varsayar; Aşama 1 `/255`, Aşama 2 ImageNet ortalama/std alır.
+6. **`mAP` bu görevde anlamsız.** Ultralytics, COCO dışı keypoint'lerde OKS sigmalarını
+   `1/nkpt` alır; 40 px hata bile 0.995 puan aldı. Piksel ve derece hatasına bakın.
+7. **Kısmi etiketli landmark'larla eğitirken `kobj=0`.** Etiketsiz ama görünür noktalar
+   `v=0` işaretlenir; görünürlük başlığı "yok" olarak öğrenirdi.
+8. **IMU örneğini enterpole et, en yakınını seçme.** 19 ms'lik sensör periyodunda 30 °/s
+   dönen bir el, kaçınılabilir ≈0.3° hata ekler.
+9. **Dağınık ısı haritasında soft-argmax kendinden emin biçimde yanlış çıkar.** Güven
+   kapısı bu sessiz hataları görünür reddedişe çevirir.
 
-## Keeping Kotlin and Python identical
+## Kotlin ve Python'u aynı tutmak
 
-The measurement code is a deliberate, line-for-line port of
-[`scripts/19_kilavuz_cizim.py`](../scripts/19_kilavuz_cizim.py). Expected values
-in `android/app/src/test/resources/*.csv` are *generated by running the Python
-reference* (`scripts/23_altin_veri.py`, `27`, `29`), never typed by hand, so both
-sides cannot share a wrong sign convention. CI checks this from both ends:
+Ölçüm kodu, [`scripts/19_kilavuz_cizim.py`](../scripts/19_kilavuz_cizim.py) dosyasının
+bilinçli, satır satır portudur. `android/app/src/test/resources/*.csv` içindeki beklenen
+değerler elle yazılmaz, *Python referansı çalıştırılarak üretilir*
+(`scripts/23_altin_veri.py`, `27`, `29`); böylece iki taraf aynı yanlış işaret
+konvansiyonunu paylaşamaz. CI bunu iki uçtan denetler:
 
-- Gradle runs the Kotlin tests against the CSVs;
-- `tests/test_golden_parity.py` re-derives the same rows from the Python reference.
+- Gradle, Kotlin testlerini CSV'lere karşı çalıştırır;
+- `tests/test_golden_parity.py` aynı satırları Python referansından yeniden türetir.
 
-## Where things live
+## Neyin nerede olduğu
 
-| Concern | Path |
+| Konu | Yol |
 |---|---|
-| Measurement maths (reference) | `scripts/19_kilavuz_cizim.py` |
-| Measurement maths (port) | `android/app/src/main/java/com/skolyoz/olcum/olcum/Olcum.kt` |
-| On-device chain | `android/.../cikarim/OlcumZinciri.kt`, `Asama1Coz.kt`, `OnIsleme.kt` |
-| IMU ring buffer & interpolation | `android/.../sensor/OrnekHalkasi.kt`, `YercekimiTakipci.kt` |
-| Stage-2 network | `scripts/39_rafinaj7_model.py` |
-| Metrics & benchmarks | `skolyoz_metrics/`, `metrics/` |
+| Ölçüm matematiği (referans) | `scripts/19_kilavuz_cizim.py` |
+| Ölçüm matematiği (port) | `android/app/src/main/java/com/skolyoz/olcum/olcum/Olcum.kt` |
+| Cihaz üstü zincir | `android/.../cikarim/OlcumZinciri.kt`, `Asama1Coz.kt`, `OnIsleme.kt` |
+| IMU halka tamponu ve enterpolasyon | `android/.../sensor/OrnekHalkasi.kt`, `YercekimiTakipci.kt` |
+| Aşama 2 ağı | `scripts/39_rafinaj7_model.py` |
+| Metrikler ve benchmark'lar | `skolyoz_metrics/`, `metrics/` |

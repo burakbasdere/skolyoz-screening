@@ -1,18 +1,18 @@
 ---
-name: Metric question or correction
-about: A published number looks wrong, unclear or over-stated
+name: Metrik sorusu ya da düzeltmesi
+about: Yayımlanmış bir sayı yanlış, belirsiz ya da abartılı görünüyor
 labels: metrics
 ---
 
-## Which number
+## Hangi sayı
 
-<!-- Section of docs/METRICS.md or the id in metrics/results.json. -->
+<!-- docs/METRICS.md bölümü ya da metrics/results.json içindeki kimlik. -->
 
-## What seems wrong
+## Neyin yanlış olduğunu düşünüyorsunuz
 
-<!-- e.g. the status should be `reported`, not `measured`; the protocol is described incorrectly;
-     the confidence interval is too narrow. -->
+<!-- örn. durum `measured` değil `reported` olmalı; protokol yanlış anlatılmış;
+     güven aralığı fazla dar. -->
 
-## Evidence
+## Kanıt
 
-<!-- Link a script, a log, or a calculation. -->
+<!-- Bir betik, günlük ya da hesap bağlantısı. -->

@@ -73,8 +73,9 @@
       "properties": {
         "rows": {"type": "array", "minItems": 1, "items": {
           "type": "object",
-          "required": ["metric", "unit", "stage1", "stage1_plus_2", "floor"],
+          "required": ["id", "metric", "unit", "stage1", "stage1_plus_2", "floor"],
           "properties": {
+            "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
             "metric": {"type": "string"}, "unit": {"type": "string"},
             "stage1": {"type": "number"}, "stage1_plus_2": {"type": "number"},
             "floor": {"type": ["number", "null"]}

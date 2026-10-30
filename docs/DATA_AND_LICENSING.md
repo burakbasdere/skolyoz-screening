@@ -1,74 +1,70 @@
-# Data, privacy and licensing
+# Veri, gizlilik ve lisans
 
-> This page records what is known and what must be decided before the project
-> is published. It is engineering notes, not legal advice.
+> Bu sayfa, projeyi yayımlamadan önce nelerin bilindiğini ve nelerin karara bağlanması
+> gerektiğini kaydeder. Mühendislik notlarıdır, hukuki danışmanlık değildir.
 
-## 1. Patient data never enters the repository
+## 1. Hasta verisi depoya asla girmez
 
-Back photographs are personal health data. `.gitignore` excludes `data/`,
-`datasets/`, all raster image types and DICOM files, `runs/`, and every model
-format (`*.pt`, `*.pth`, `*.onnx`, `*.tflite`) and package (`*.apk`, `*.aab`).
-Documentation figures are the one exception: PNGs under `docs/` are allowed, so
-**check any image you add there contains no real person**.
+Sırt fotoğrafları kişisel sağlık verisidir. `.gitignore`; `data/`, `datasets/`, tüm
+raster görüntü türlerini ve DICOM dosyalarını, `runs/` klasörünü, her model biçimini
+(`*.pt`, `*.pth`, `*.onnx`, `*.tflite`) ve paketleri (`*.apk`, `*.aab`) dışarıda tutar.
+Tek istisna dokümantasyon şekilleridir: `docs/` altındaki PNG'lere izin verilir, bu yüzden
+oraya eklediğiniz her görselin **gerçek bir kişi içermediğini kontrol edin**. (Bu depodaki
+`docs/img/` grafikleri JSON'dan üretilen SVG'lerdir; görüntü içermez.)
 
-If a patient image is ever committed, treat it as a leak: deleting it in a later
-commit does not remove it from history. Rewrite history and rotate any links.
-See [SECURITY.md](../SECURITY.md).
+Bir hasta görüntüsü commit edilirse bunu sızıntı sayın: sonraki bir commit'te silmek geçmişten
+kaldırmaz. Geçmişi yeniden yazın ve bağlantıları geçersiz kılın. Bkz. [SECURITY.md](../SECURITY.md).
 
-## 2. Training data provenance
+## 2. Eğitim verisinin kaynağı
 
-- Source: a Roboflow export (`education-ovbua/bladeco v1`), 1,119 files. The
-  images are web-sourced: clinical photographs, stock images and greyscale
-  publication figures ([tr/TEKNIK_DOKUMAN.md §7](tr/TEKNIK_DOKUMAN.md)).
-- **The licence of the individual images is not recorded anywhere in the
-  project.** Do not redistribute the images, and assume any weights trained on
-  them may inherit restrictions until that is clarified.
-- The original photographs are gone; only the stretched 640 × 640 versions
-  remain, so provenance cannot be reconstructed from the files.
+- Kaynak: bir Roboflow dışa aktarımı (`education-ovbua/bladeco v1`), 1.119 dosya. Görüntüler
+  web kaynaklıdır: klinik fotoğraflar, stok görseller ve yayınlardan gri tonlamalı şekiller
+  ([tr/TEKNIK_DOKUMAN.md §7](tr/TEKNIK_DOKUMAN.md)).
+- **Tek tek görüntülerin lisansı projede hiçbir yerde kayıtlı değil.** Görüntüleri yeniden
+  dağıtmayın; bu görüntülerle eğitilmiş ağırlıkların da kısıtlar devralabileceğini, durum
+  netleşene kadar varsayın.
+- Orijinal fotoğraflar kayıp; yalnızca gerilmiş 640 × 640 sürümler kaldı, bu yüzden kaynak
+  dosyalardan geri izlenemez.
 
-## 3. Third-party components
+## 3. Üçüncü taraf bileşenler
 
-| Component | Where | Licence (verify against the upstream before relying on it) |
+| Bileşen | Nerede | Lisans (güvenmeden önce kaynağından doğrulayın) |
 |---|---|---|
-| Ultralytics YOLO11 (code **and** pretrained weights) | Stage-1 training, many `scripts/`, `skolyoz_metrics bench arch` | **AGPL-3.0**; an Ultralytics Enterprise licence exists for closed use |
-| PyTorch, torchvision | Stage-2 training and benchmarks | BSD-style |
-| MobileNetV3-small ImageNet weights (torchvision) | Stage-2 initialisation | Code BSD-style; the weights were trained on ImageNet, whose terms restrict commercial use — check |
-| TensorFlow Lite, AndroidX (Compose, CameraX, …), Kotlin | Android app | Apache-2.0 |
-| onnx2tf | Export | MIT |
+| Ultralytics YOLO11 (kod **ve** önceden eğitilmiş ağırlıklar) | Aşama 1 eğitimi, birçok `scripts/`, `skolyoz_metrics bench arch` | **AGPL-3.0**; kapalı kullanım için Ultralytics Enterprise lisansı var |
+| PyTorch, torchvision | Aşama 2 eğitimi ve benchmark'lar | BSD tarzı |
+| MobileNetV3-small ImageNet ağırlıkları (torchvision) | Aşama 2 başlangıcı | Kod BSD tarzı; ağırlıklar ImageNet üzerinde eğitildi ve ImageNet'in koşulları ticari kullanımı kısıtlar — kontrol edin |
+| TensorFlow Lite, AndroidX (Compose, CameraX, …), Kotlin | Android uygulaması | Apache-2.0 |
+| onnx2tf | Dışa aktarma | MIT |
 | ai-edge-litert | TFLite benchmark | Apache-2.0 |
 
-## 4. The AGPL question — decide before publishing
+## 4. AGPL sorusu — yayımlamadan önce karar verin
 
-The fine-tuned Stage-1 model is derived from Ultralytics YOLO11, and the Android
-app embeds it. Under Ultralytics' terms that makes the model, and an app that
-ships it, subject to AGPL-3.0: users who receive the app must be able to obtain
-the corresponding source. The research scripts that `import ultralytics` are in
-the same position.
+İnce ayarlı Aşama 1 modeli Ultralytics YOLO11'den türetilmiştir ve Android uygulaması onu
+içinde taşır. Ultralytics'in koşullarına göre bu, modeli ve onu gönderen uygulamayı
+AGPL-3.0'a tabi kılar: uygulamayı alan kullanıcılar ilgili kaynak koda erişebilmelidir.
+`import ultralytics` yapan araştırma betikleri de aynı durumdadır.
 
-| Option | Consequence |
+| Seçenek | Sonuç |
 |---|---|
-| **Release everything under AGPL-3.0** | Simplest and consistent. Anyone may use and modify it, but derivative works (including network services) must stay open. Fits an open research project. |
-| Split: permissive licence for original code (`android/` sources, `skolyoz_metrics/`, docs), AGPL for anything importing Ultralytics and for the weights | More precise, but the shipped APK still contains the AGPL weights, so the *distributed app* is AGPL anyway. |
-| Buy an Ultralytics Enterprise licence, or retrain Stage 1 with a permissively licensed detector | Frees the licence, at a cost or an engineering effort. Stage 1 would need re-evaluation. |
+| **Her şeyi AGPL-3.0 ile yayımlamak** | En basit ve tutarlı. Herkes kullanabilir ve değiştirebilir; ancak türev işler (ağ hizmetleri dahil) açık kalmalıdır. Açık bir araştırma projesine uyar. |
+| Bölmek: özgün kod (`android/` kaynakları, `skolyoz_metrics/`, dokümanlar) için izin verici lisans, Ultralytics'i içe aktaran her şey ve ağırlıklar için AGPL | Daha hassas, ama gönderilen APK AGPL ağırlıklarını içerdiği için *dağıtılan uygulama* yine AGPL olur. |
+| Ultralytics Enterprise lisansı almak ya da Aşama 1'i izin verici lisanslı bir dedektörle yeniden eğitmek | Lisansı serbest bırakır; maliyet ya da mühendislik emeği gerektirir. Aşama 1'in yeniden değerlendirilmesi gerekir. |
 
-**Recommendation:** release under AGPL-3.0 unless a commercial product is
-planned, and add the `LICENSE` file in the same commit that publishes the
-repository. No licence has been chosen yet; until one is, the code is "all rights
-reserved" and others cannot legally reuse it.
+**Öneri:** ticari bir ürün planlanmıyorsa AGPL-3.0 ile yayımlayın ve `LICENSE` dosyasını
+depoyu yayımlayan commit'e ekleyin. Henüz lisans seçilmedi; seçilene kadar kod "tüm hakları
+saklıdır" durumundadır ve başkaları onu yasal olarak yeniden kullanamaz.
 
-## 5. Weights and APKs
+## 5. Ağırlıklar ve APK'ler
 
-The earlier repository committed a debug APK and an unsigned release APK.
-Those contain `asama1.tflite` and `asama2.tflite`, so the weights were
-effectively published although the README said they were not. This repository
-leaves binaries out. If you want people to try the app, attach a build to a
-GitHub Release **after** settling sections 2 and 4, and record its SHA-256 in
-`metrics/results.json` (`artifacts`).
+Önceki depo bir debug APK ve imzasız bir release APK commit etmişti. Bunlar `asama1.tflite` ve
+`asama2.tflite` dosyalarını içerir; yani README "ağırlıklar git'e girmez" dese de ağırlıklar fiilen
+yayımlanmıştı. Bu depo ikili dosyaları dışarıda bırakır. İnsanların uygulamayı denemesini
+isterseniz, 2. ve 4. bölümleri çözdükten **sonra** bir derlemeyi GitHub Release'e ekleyin ve
+SHA-256 değerini `metrics/results.json` içine (`artifacts`) kaydedin.
 
-## 6. Regulation
+## 6. Mevzuat
 
-Software intended for a medical purpose can be a regulated medical device (for
-example under the EU MDR, FDA rules or the Turkish TİTCK framework) even when it
-is free. This project positions itself as research software and a screening aid
-and says so everywhere the user sees output. If you distribute it to the public
-for health use, get regulatory advice first.
+Tıbbi amaçlı yazılım, ücretsiz bile olsa düzenlemeye tabi bir tıbbi cihaz olabilir (örneğin AB
+MDR, FDA kuralları ya da Türkiye'de TİTCK çerçevesi). Bu proje kendini araştırma yazılımı ve
+tarama yardımcısı olarak konumlandırır ve kullanıcının gördüğü her çıktıda bunu söyler. Sağlık
+amaçlı olarak kamuya dağıtacaksanız önce mevzuat danışmanlığı alın.

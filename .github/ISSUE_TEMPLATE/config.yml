@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Privacy or patient-data concern
+  - name: Gizlilik ya da hasta verisi endişesi
     url: https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability
-    about: Please report privately (see SECURITY.md), never in a public issue.
+    about: Lütfen gizlice bildirin (bkz. SECURITY.md), asla herkese açık issue'da değil.

@@ -44,7 +44,7 @@ def test_headline_numbers_come_from_the_json(results, root):
     assert "6.44 MB" in en
     assert "2.69 M / 0.41 M" in en
     tr = render_headline(results, benchmarks, "tr")
-    assert "ölçülen" in tr and "%95 GA" in tr
+    assert "ölçülen" in tr and "%95 GA" in tr and "Aksiller eğim hatası" in tr
 
 
 def test_headline_follows_the_data(results, root):
@@ -54,16 +54,23 @@ def test_headline_follows_the_data(results, root):
 
 def test_metrics_page_has_every_section_and_the_gaps(results, root):
     page = render_metrics_md(results, load_benchmarks(root))
-    for heading in ("## 1. Accuracy", "## 2. Deployment", "## 3. Latency", "## 4. Port",
-                    "## 5. Robustness", "## 6. Dataset", "## 7. Negative results",
-                    "## 8. Known gaps"):
+    for heading in ("## 1. Doğruluk", "## 2. Dağıtım", "## 3. Gecikme", "## 4. Port",
+                    "## 5. Dayanıklılık", "## 6. Veri kümesi", "## 7. Olumsuz sonuçlar",
+                    "## 8. Bilinen boşluklar"):
         assert heading in page
     assert "cobb_estimate" in page and "unvalidated" in page
-    assert "not a diagnostic tool" in page
+    assert "tanı aracı değildir" in page
     # Both protocols are described once, and every accuracy table points back to one.
-    assert page.count("### Evaluation protocols") == 1
-    assert "`cv5_stage2` — 5-fold cross-validation" in page
-    assert page.count("Protocol `holdout50`") == 3 and page.count("Protocol `cv5_stage2`") == 2
+    assert page.count("### Değerlendirme protokolleri") == 1
+    assert "`cv5_stage2` — Aşama 2 için 5 katlı çapraz doğrulama" in page
+    assert page.count("Protokol `holdout50`") == 3 and page.count("Protokol `cv5_stage2`") == 2
+
+
+def test_metrics_page_embeds_every_chart_with_a_dark_variant(results, root):
+    page = render_metrics_md(results, load_benchmarks(root))
+    assert page.count("<picture>") == 5
+    assert page.count("prefers-color-scheme: dark") == 5
+    assert "img/latency-dark.svg" in page and 'alt="' in page
 
 
 def test_ratio_columns_use_the_stored_numbers(results, root):

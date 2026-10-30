@@ -1,15 +1,15 @@
-## What and why
+## Ne ve neden
 
-<!-- One or two sentences. -->
+<!-- Bir iki cümle. -->
 
-## Checklist
+## Kontrol listesi
 
-- [ ] No patient images, labels derived from them, or trained weights are included
-- [ ] `python -m skolyoz_metrics check`, `pytest` and `ruff check .` pass
-- [ ] If a number changed: it is edited in `metrics/results.json` (with `status` and `source`) or in a new `metrics/benchmarks/` file, and `python -m skolyoz_metrics render` output is committed
-- [ ] If measurement maths changed: Python reference, golden CSVs and Kotlin port all updated; Gradle tests pass
-- [ ] The change does not introduce a Cobb-angle claim in UI or docs
+- [ ] Hasta görüntüsü, onlardan türetilmiş etiket ya da eğitilmiş ağırlık eklenmedi
+- [ ] `python -m skolyoz_metrics check`, `pytest` ve `ruff check .` geçiyor
+- [ ] Bir sayı değiştiyse: `metrics/results.json` içinde (`status` ve `source` ile) ya da yeni bir `metrics/benchmarks/` dosyasında düzenlendi ve `python -m skolyoz_metrics render` çıktısı commit edildi
+- [ ] Ölçüm matematiği değiştiyse: Python referansı, altın veri CSV'leri ve Kotlin portu birlikte güncellendi; Gradle testleri geçiyor
+- [ ] Değişiklik arayüze ya da dokümana Cobb açısı iddiası eklemiyor
 
-## Metrics affected
+## Etkilenen metrikler
 
-<!-- Which metric ids / sections? "None" is fine. -->
+<!-- Hangi metrik kimlikleri / bölümler? "Yok" da olur. -->

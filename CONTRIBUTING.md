@@ -1,23 +1,23 @@
-# Contributing
+# Katkı rehberi
 
-Thanks for looking. This is research software with a medical flavour, so the
-rules below exist to keep it honest and safe, not to slow you down.
+İlginiz için teşekkürler. Bu, tıbbi bir yönü olan araştırma yazılımıdır; aşağıdaki kurallar
+sizi yavaşlatmak için değil, projeyi dürüst ve güvenli tutmak için var.
 
-## Ground rules
+## Temel kurallar
 
-1. **No patient data, ever** — no photographs, no labels derived from them, no
-   weights trained on them. See [docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md).
-2. **Numbers live in `metrics/`.** If your change adds or alters a metric, edit
-   `metrics/results.json` (every section needs a `status` and a `source`) or add a
-   benchmark file, then run `python -m skolyoz_metrics render`. Never type a
-   result into a README by hand: CI regenerates it and fails on any difference.
-3. **State what a number is not.** A held-out result is not a cross-validation
-   result; a desktop timing is not a phone timing. If you can't measure it, add a
-   `gaps` entry instead of omitting it.
-4. **Don't state a Cobb angle** in new UI or docs. The project has no
-   radiograph-paired data.
+1. **Asla hasta verisi yok** — fotoğraf, onlardan türetilmiş etiket ya da onlarla eğitilmiş
+   ağırlık eklemeyin. Bkz. [docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md).
+2. **Sayılar `metrics/` içinde yaşar.** Değişikliğiniz bir metrik ekliyor ya da değiştiriyorsa
+   `metrics/results.json` dosyasını düzenleyin (her bölümde `status` ve `source` olmalı) ya da
+   yeni bir benchmark dosyası ekleyin, sonra `python -m skolyoz_metrics render` çalıştırın.
+   Bir sonucu README'ye elle yazmayın: CI hepsini yeniden üretir ve fark varsa başarısız olur.
+   Grafikler (`docs/img/`) de aynı yolla üretilir.
+3. **Bir sayının ne olmadığını yazın.** Ayrılmış küme sonucu çapraz doğrulama sonucu değildir;
+   masaüstü zamanlaması telefon zamanlaması değildir. Ölçemiyorsanız atlamak yerine `gaps`
+   içine bir madde ekleyin.
+4. **Yeni arayüzde ya da dokümanda Cobb açısı belirtmeyin.** Projede radyografi eşleşmeli veri yok.
 
-## Setup
+## Kurulum
 
 ```bash
 python -m venv .venv && source .venv/bin/activate        # Windows: .venv\Scripts\activate
@@ -25,32 +25,30 @@ pip install -r requirements/dev.txt
 python -m skolyoz_metrics check && pytest && ruff check .
 ```
 
-Heavier, optional: `requirements/bench.txt` for benchmarks and the architecture
-tests (they skip themselves when torch / ultralytics are absent).
+Daha ağır, isteğe bağlı: benchmark'lar ve mimari testleri için `requirements/bench.txt`
+(torch / ultralytics yoksa bu testler kendilerini atlar).
 
-Android (JDK 17; Android SDK with platform 35):
+Android (JDK 17; Android SDK platform 35):
 
 ```bash
 cd android && ./gradlew :app:testDebugUnitTest
 ```
 
-## Changing the measurement maths
+## Ölçüm matematiğini değiştirmek
 
-The Kotlin code is a port of `scripts/19_kilavuz_cizim.py`. Change the Python
-reference first, regenerate the golden data (`scripts/23_altin_veri.py`, `27`,
-`29`), then make the Kotlin tests pass. Both `tests/test_golden_parity.py` and the
-Gradle tests must be green.
+Kotlin kodu `scripts/19_kilavuz_cizim.py` dosyasının portudur. Önce Python referansını
+değiştirin, altın veriyi yeniden üretin (`scripts/23_altin_veri.py`, `27`, `29`), sonra
+Kotlin testlerini geçirin. Hem `tests/test_golden_parity.py` hem de Gradle testleri yeşil olmalı.
 
-## Style
+## Stil
 
-- Python: Ruff (`ruff check .`), line length 100, type hints on public functions.
-  `scripts/` is a frozen record of the experiments and is not linted; fix bugs
-  there, but don't reformat it.
-- Kotlin: official style (`kotlin.code.style=official`).
-- Commits: imperative, one logical change each ("Add p99 to latency summary").
-- Pull requests: say which metrics changed and attach the regenerated files.
+- Python: Ruff (`ruff check .`), satır uzunluğu 100, genel fonksiyonlarda tür ipuçları.
+  `scripts/` deneylerin donmuş kaydıdır, lint edilmez; hata düzeltin ama yeniden biçimlendirmeyin.
+- Kotlin: resmî stil (`kotlin.code.style=official`).
+- Commit'ler: emir kipi, her biri tek mantıksal değişiklik ("p99'u gecikme özetine ekle").
+- Pull request'ler: hangi metriklerin değiştiğini yazın ve yeniden üretilen dosyaları ekleyin.
 
-## Reporting a problem
+## Sorun bildirmek
 
-Use the issue templates. For anything involving patient data, **don't** attach
-it — see [SECURITY.md](SECURITY.md).
+Issue şablonlarını kullanın. Hasta verisini ilgilendiren herhangi bir şey için onu **eklemeyin**
+— bkz. [SECURITY.md](SECURITY.md).

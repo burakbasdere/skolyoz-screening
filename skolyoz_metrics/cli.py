@@ -1,4 +1,4 @@
-"""Command line entry point: ``python -m skolyoz_metrics {check,render,bench}``."""
+"""Skolyoz metrik araçları: ``python -m skolyoz_metrics {check,render,bench}``."""
 
 from __future__ import annotations
 
@@ -34,9 +34,9 @@ def _drift(root: Path, results: dict, benchmarks: list[dict]) -> list[str]:
         current = normalise(path.read_text(encoding="utf-8")) if path.exists() else ""
         if current != wanted:
             diff = difflib.unified_diff(
-                current.splitlines(), wanted.splitlines(), "on disk", "from JSON", lineterm="", n=0
+                current.splitlines(), wanted.splitlines(), "diskteki", "JSON'dan", lineterm="", n=0
             )
-            stale.append(f"{path.relative_to(root)} is stale:\n    " + "\n    ".join(
+            stale.append(f"{path.relative_to(root)} güncel değil:\n    " + "\n    ".join(
                 list(diff)[:12]))
     return stale
 
@@ -49,11 +49,11 @@ def cmd_render(args: argparse.Namespace) -> int:
         for line in stale:
             print(line)
         if stale:
-            print("\nRun `python -m skolyoz_metrics render` and commit the result.")
+            print("\n`python -m skolyoz_metrics render` çalıştırıp sonucu commit edin.")
         return 1 if stale else 0
     for path, text in render_all(root, results, benchmarks).items():
         _write_text(path, text)
-        print(f"wrote {path.relative_to(root)}")
+        print(f"yazıldı: {path.relative_to(root)}")
     return 0
 
 
@@ -72,9 +72,10 @@ def cmd_check(args: argparse.Namespace) -> int:
         problems += [f"results.json: {m}" for m in consistency_errors(results)]
         problems += _drift(root, results, benchmarks)
     for p in problems:
-        print(f"FAIL {p}")
+        print(f"HATA {p}")
     if not problems:
-        print(f"OK: results.json, {len(benchmarks)} benchmark file(s), generated docs in sync")
+        print(f"TAMAM: results.json, {len(benchmarks)} benchmark dosyası, "
+              "üretilen dokümanlar senkron")
     return 1 if problems else 0
 
 
@@ -101,12 +102,13 @@ def _finish_bench(args: argparse.Namespace, kind: str, env: dict, payload: dict)
     out = args.out or (args.root / "metrics" / "benchmarks"
                        / f"{now:%Y-%m-%d}_{kind}_{_slug(env['cpu'])}.json")
     _write_text(out, json.dumps(run, indent=2, ensure_ascii=False) + "\n")
-    print(f"wrote {out}")
+    print(f"yazıldı: {out}")
     for r in run["results"]:
         lat = r["latency_ms"]
         print(f"  {r['name']:<9} {r['device']:<8} p50 {lat['p50']:8.2f} ms   "
               f"p90 {lat['p90']:8.2f} ms   p99 {lat['p99']:8.2f} ms")
-    print("Run `python -m skolyoz_metrics render` to refresh docs/METRICS.md and the READMEs.")
+    print("docs/METRICS.md ve README tablolarını yenilemek için "
+          "`python -m skolyoz_metrics render` çalıştırın.")
     return 0
 
 
@@ -139,32 +141,35 @@ def cmd_bench_tflite(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="skolyoz-metrics", description=__doc__)
     parser.add_argument("--version", action="version", version=__version__)
-    parser.add_argument("--root", type=Path, default=repo_root(), help="repository root")
+    parser.add_argument("--root", type=Path, default=repo_root(), help="depo kök dizini")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("check", help="validate metrics files and verify generated docs are in sync"
-                   ).set_defaults(func=cmd_check)
+    sub.add_parser("check", help="metrik dosyalarını doğrula, üretilen dokümanların güncel "
+                   "olduğunu denetle").set_defaults(func=cmd_check)
 
-    render = sub.add_parser("render", help="regenerate docs/METRICS.md and the README tables")
-    render.add_argument("--check", action="store_true", help="fail instead of writing if stale")
+    render = sub.add_parser("render", help="docs/METRICS.md ve README tablolarını yeniden üret")
+    render.add_argument("--check", action="store_true",
+                        help="yazmak yerine, güncel değilse hata ver")
     render.set_defaults(func=cmd_render)
 
-    bench = sub.add_parser("bench", help="data-free latency benchmarks")
+    bench = sub.add_parser("bench", help="veri gerektirmeyen gecikme ölçümleri")
     bsub = bench.add_subparsers(dest="kind", required=True)
 
     def common(p: argparse.ArgumentParser) -> None:
         p.add_argument("--threads", type=int, default=4,
-                       help="CPU threads (the Android app uses 4)")
-        p.add_argument("--warmup", type=int, default=10)
-        p.add_argument("--repeat", type=int, default=100)
-        p.add_argument("--out", type=Path, help="output file (default: metrics/benchmarks/...)")
+                       help="CPU iş parçacığı sayısı (Android uygulaması 4 kullanır)")
+        p.add_argument("--warmup", type=int, default=10, help="ölçülmeyen ısınma koşusu")
+        p.add_argument("--repeat", type=int, default=100, help="ölçülen koşu sayısı")
+        p.add_argument("--out", type=Path,
+                       help="çıktı dosyası (varsayılan: metrics/benchmarks/...)")
 
-    arch = bsub.add_parser("arch", help="PyTorch architectures with random weights")
-    arch.add_argument("--devices", nargs="+", help="e.g. cpu cuda (default: cpu + cuda if any)")
+    arch = bsub.add_parser("arch", help="rastgele ağırlıklı PyTorch mimarileri")
+    arch.add_argument("--devices", nargs="+",
+                      help="örn. cpu cuda (varsayılan: cpu + varsa cuda)")
     common(arch)
     arch.set_defaults(func=cmd_bench_arch)
 
-    tfl = bsub.add_parser("tflite", help="the deployed .tflite files")
+    tfl = bsub.add_parser("tflite", help="dağıtılan .tflite dosyaları")
     tfl.add_argument("--stage1", type=Path, required=True, help="asama1.tflite")
     tfl.add_argument("--stage2", type=Path, required=True, help="asama2.tflite")
     common(tfl)

@@ -105,10 +105,10 @@ def run(root: Path, *, devices: list[str], threads: int, warmup: int, repeat: in
     return {
         "results": results,
         "notes": [
-            "Random weights, synthetic input; eager PyTorch forward only "
-            "(no pre/post-processing, no NMS).",
-            f"pipeline = 1 x stage1 + {N_LANDMARKS} x stage2, run sequentially at batch size 1, "
-            "mirroring OlcumZinciri.kt.",
-            "params counts every learnable parameter; gflops = 2 x multiply-accumulates.",
+            "Rastgele ağırlık, sentetik girdi; yalnızca eager PyTorch ileri geçişi "
+            "(ön/son işleme ve NMS yok).",
+            f"pipeline = 1 x stage1 + {N_LANDMARKS} x stage2; OlcumZinciri.kt'yi yansıtacak "
+            "şekilde batch boyutu 1 ile sırayla çalıştırılır.",
+            "params her öğrenilebilir parametreyi sayar; gflops = 2 x çarpma-toplama sayısı.",
         ],
     }

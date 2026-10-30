@@ -1,22 +1,22 @@
 ---
-name: Bug report
-about: Something is wrong in the app, the tooling or the numbers
+name: Hata bildirimi
+about: Uygulamada, araçlarda ya da sayılarda bir şey yanlış
 labels: bug
 ---
 
-**Do not attach photographs of people or anything derived from them.** Describe
-the problem instead. See SECURITY.md.
+**İnsan fotoğrafı ya da onlardan türetilmiş hiçbir şey eklemeyin.** Sorunu kelimelerle
+anlatın. Bkz. SECURITY.md.
 
-## What happened
+## Ne oldu
 
-## What you expected
+## Ne bekliyordunuz
 
-## How to reproduce
+## Nasıl yeniden üretilir
 
-<!-- Command, build variant, device model / Android version if relevant. -->
+<!-- Komut, derleme türü; gerekiyorsa cihaz modeli / Android sürümü. -->
 
-## Environment
+## Ortam
 
-- OS / device:
-- Python / JDK / Gradle versions (if relevant):
+- İşletim sistemi / cihaz:
+- Python / JDK / Gradle sürümleri (gerekiyorsa):
 - Commit:

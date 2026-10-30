@@ -1,71 +1,67 @@
-# Model card
+# Model kartı
 
-Numbers are not repeated here; see [METRICS.md](METRICS.md). Every claim below
-is limited to what that page and the research notes support.
+Sayılar burada tekrarlanmaz; bkz. [METRICS.md](METRICS.md). Aşağıdaki her iddia, o sayfanın ve
+araştırma notlarının desteklediği kadarla sınırlıdır.
 
-## Models
+## Modeller
 
-| | Stage 1 | Stage 2 |
+| | Aşama 1 | Aşama 2 |
 |---|---|---|
-| Role | Coarse localisation of 7 landmarks | Sub-pixel refinement of each landmark |
-| Architecture | Ultralytics YOLO11n-pose, fine-tuned (7 keypoints) | MobileNetV3-small trunk + transposed-convolution head, heatmap + soft-argmax |
-| Input | 640 × 640 RGB, `/255` | 128 × 128 RGB crop, ImageNet mean/std |
-| Shipped as | TFLite float16 | TFLite float16 |
-| Weights | not distributed (see [DATA_AND_LICENSING.md](DATA_AND_LICENSING.md)) | not distributed |
+| Rol | 7 landmark'ın kaba lokalizasyonu | Her landmark'ın alt-piksel rafinajı |
+| Mimari | Ultralytics YOLO11n-pose, ince ayarlı (7 keypoint) | MobileNetV3-small gövde + transpoze konvolüsyon başlığı, ısı haritası + soft-argmax |
+| Girdi | 640 × 640 RGB, `/255` | 128 × 128 RGB kırpım, ImageNet ortalama/std |
+| Dağıtım biçimi | TFLite float16 | TFLite float16 |
+| Ağırlıklar | dağıtılmaz ([DATA_AND_LICENSING.md](DATA_AND_LICENSING.md)) | dağıtılmaz |
 
-## Intended use
+## Kullanım amacı
 
-- **Screening aid for trunk asymmetry** in research, education and pilot studies:
-  a person standing upright, photographed **from behind**, phone held upright, to
-  suggest whether a referral to a clinician may be worthwhile.
-- Outputs are *indicators* (axillary tilt, coronal balance) shown with a
-  mandatory "not a diagnostic tool" notice.
+- Araştırma, eğitim ve pilot çalışmalarda **gövde asimetrisi için tarama yardımcısı**:
+  dik duran, **arkadan** çekilmiş, telefon dik tutulmuş bir kişinin fotoğrafı; bir hekime
+  yönlendirmenin değerli olup olmayabileceğine dair ipucu vermek için.
+- Çıktılar *göstergelerdir* (aksiller eğim, koronal denge); zorunlu "tanı aracı değildir"
+  ibaresiyle birlikte gösterilir.
 
-## Out of scope — do not use for
+## Kapsam dışı — şunun için kullanmayın
 
-- **Diagnosis, severity grading or treatment decisions.**
-- **Estimating a Cobb angle.** The project has no radiograph-paired data. The
-  Cobb figure the Android overlay currently shows is an uncalibrated
-  placeholder (see the `cobb_estimate` gap).
-- Front or side views, the forward-bend (Adams) test, video, or a front-facing camera
-  (it mirrors the image, which swaps left and right).
-- Any population that may be absent from the training data. Its age, sex and skin-tone
-  composition is undocumented (see below), so no population is known to be covered.
+- **Tanı, şiddet derecelendirmesi ya da tedavi kararı.**
+- **Cobb açısı tahmini.** Projede radyografi eşleşmeli veri yok. Android arayüzünün şu an
+  gösterdiği Cobb değeri kalibre edilmemiş bir yer tutucudur (`cobb_estimate` boşluğuna bakın).
+- Ön ya da yan görünüm, öne eğilme (Adams) testi, video veya ön kamera (görüntüyü aynalar,
+  sağ ve sol yer değiştirir).
+- Eğitim verisinde bulunmayabilecek herhangi bir popülasyon. Yaş, cinsiyet ve ten rengi dağılımı
+  belgelenmemiştir (aşağıya bakın), dolayısıyla kapsandığı bilinen bir popülasyon yoktur.
 
-## Training and evaluation data
+## Eğitim ve değerlendirme verisi
 
-- 337 cleaned images from a web-sourced Roboflow export (1,119 files →
-  441 unique → 337 usable), resized to 640 × 640 *without* preserving aspect
-  ratio. The mix includes clinical photographs, stock images and greyscale
-  figures from publications. The originals are unavailable.
-- Duplicates (rotated copies of one photograph) and left/right label conflicts
-  were removed or repaired; independent labels were averaged to cut label noise.
-- Evaluation: group-aware 5-fold cross-validation of Stage 2 with simulated
-  coarse seeds, plus a single held-out split of 50 images. Both protocols and
-  their limits are in METRICS §1.
+- Web kaynaklı bir Roboflow dışa aktarımından temizlenmiş 337 görüntü (1.119 dosya → 441
+  benzersiz → 337 kullanılabilir); en-boy oranı korunmadan 640 × 640'a boyutlandırılmış.
+  Karışımda klinik fotoğraflar, stok görseller ve yayınlardan gri tonlamalı şekiller var.
+  Orijinallere erişilemiyor.
+- Yinelemeler (aynı fotoğrafın döndürülmüş kopyaları) ve sağ/sol etiket çelişkileri
+  ayıklandı ya da onarıldı; etiket gürültüsünü azaltmak için bağımsız etiketlerin ortalaması alındı.
+- Değerlendirme: benzetilmiş kaba noktalarla Aşama 2'nin grup duyarlı 5 katlı çapraz
+  doğrulaması ve 50 görüntülük tek bir ayrılmış küme. İki protokol ve sınırları METRICS §1'de.
 
-## Known limitations
+## Bilinen sınırlar
 
-- **Domain gap.** The target input — colour phone photographs under the intended
-  capture protocol — is not what the model was trained or evaluated on. In an
-  informal check, three consecutive shots of one scene gave widely different
-  angles, which is why a confidence gate exists.
-- **No end-to-end or on-device accuracy** for the 7-landmark system.
-- **Spine landmarks are weak** and no curve profile is delivered; the limit is
-  label noise, shown by measurement.
-- **Small data.** Spine labels exist for 182 images; screening-decision
-  statistics rest on 4–16 positive cases.
-- **No subgroup analysis.** The sources record no demographics, skin tone,
-  body-habitus or age information, so performance across such groups is
-  unknown. Treat any claim of fairness as unsupported.
+- **Alan kayması.** Hedef girdi — amaçlanan protokolle çekilmiş renkli telefon fotoğrafları —
+  modelin eğitildiği ya da değerlendirildiği şey değil. Gayriresmî bir denemede aynı sahnenin
+  art arda üç çekimi çok farklı açılar verdi; güven kapısı bu yüzden var.
+- 7 landmark'lı sistem için **uçtan uca ya da cihaz üstü doğruluk yok**.
+- **Omurga landmark'ları zayıf** ve eğri profili üretilmiyor; sınır etiket gürültüsüdür ve
+  ölçümle gösterilmiştir.
+- **Küçük veri.** Omurga etiketi 182 görüntüde var; tarama kararı istatistikleri 4–16 pozitif
+  vakaya dayanıyor.
+- **Alt grup analizi yok.** Kaynaklarda demografi, ten rengi, vücut yapısı ya da yaş bilgisi
+  yok; bu gruplar arasındaki başarım bilinmiyor. Adalet iddiası desteksizdir.
 
-## Risks and mitigations
+## Riskler ve önlemler
 
-| Risk | Mitigation in the project | Still open |
+| Risk | Projedeki önlem | Hâlâ açık |
 |---|---|---|
-| False reassurance ("looks normal") delaying care | Mandatory notice; recall treated as the priority metric | Not validated on patients; recall CI is wide |
-| False alarms | Output labelled as screening indicator with a position in the dataset distribution, never a clinical grade | Prevalence in intended population unknown |
-| Silently wrong angle from an unstable heatmap | Two-criterion confidence gate rejects the shot | Gate not yet tested on a real capture campaign |
-| Wrong angle from a tilted phone | IMU roll correction, pitch gate at 8° | Depends on sensor quality |
-| Exposure of health data | On-device inference, no `INTERNET` permission, backups off, `.gitignore` for images | Debug builds write diagnostic images to disk (`BuildConfig.DEBUG` only) — never use a debug build with real subjects |
-| Over-claiming | Generated metrics page with statuses and a gaps register | — |
+| Yanlış güvence ("normal görünüyor") ile bakımın gecikmesi | Zorunlu ibare; duyarlılık öncelikli metrik | Hastalar üzerinde doğrulanmadı; duyarlılık GA'sı geniş |
+| Yanlış alarm | Çıktı, klinik derece değil, veri kümesi dağılımındaki konumla birlikte tarama göstergesi olarak etiketlenir | Hedef popülasyondaki yaygınlık bilinmiyor |
+| Kararsız ısı haritasından sessizce yanlış açı | İki ölçütlü güven kapısı çekimi reddeder | Kapı gerçek bir çekim kampanyasında denenmedi |
+| Eğik tutulan telefondan yanlış açı | IMU roll düzeltmesi, 8°'de pitch kapısı | Sensör kalitesine bağlı |
+| Sağlık verisinin ifşası | Cihaz üstü çıkarım, `INTERNET` izni yok, yedekleme kapalı, görüntüler için `.gitignore` | Debug derlemeleri teşhis görüntülerini diske yazar (yalnızca `BuildConfig.DEBUG`) — gerçek kişilerde asla debug derlemesi kullanmayın |
+| Abartılı iddia | Durumlu ve boşluk kayıtlı, üretilen metrik sayfası | — |

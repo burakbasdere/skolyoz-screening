@@ -1,54 +1,54 @@
-# Technology stack
+# Teknoloji yığını
 
-Versions are taken from the build files named in the last column, not from
-memory. If a pin changes there, change it here (or better, change it only there).
+Sürümler, hafızadan değil, son sütunda adı geçen build dosyalarından alınmıştır. Bir
+sabitleme orada değişirse burada da değiştirin (daha iyisi: yalnızca orada değiştirin).
 
-## Android app
+## Android uygulaması
 
-| Concern | Choice | Pinned in |
+| Konu | Seçim | Nerede sabitli |
 |---|---|---|
-| Language | Kotlin 2.0.21, JVM target 17 | `android/gradle/libs.versions.toml`, `app/build.gradle.kts` |
-| Build | Android Gradle Plugin 8.7.3, Gradle 8.10.2 (wrapper) | `libs.versions.toml`, `gradle-wrapper.properties` |
-| SDK levels | min 26 (Android 8.0), compile / target 35 | `app/build.gradle.kts` |
-| UI | Jetpack Compose (BOM 2024.12.01), Material 3, Activity-Compose 1.9.3, Lifecycle 2.8.7 | `libs.versions.toml` |
-| Camera | CameraX 1.4.1 (`core`, `camera2`, `lifecycle`, `view`); zero-shutter-lag capture; portrait locked | `libs.versions.toml`, `CekimEkrani.kt` |
-| Orientation sensing | `SensorManager` `TYPE_GRAVITY`, ring buffer + linear interpolation at the frame's hardware timestamp | `sensor/` |
-| Inference | TensorFlow Lite 2.16.1, 4 CPU threads, models memory-mapped (`noCompress += tflite`) | `libs.versions.toml`, `OlcumZinciri.kt` |
-| Release ABIs | `arm64-v8a`, `armeabi-v7a` (debug stays universal for emulators) | `app/build.gradle.kts` |
-| Unit tests | JUnit 4.13.2; golden-data CSVs; a JVM pre-processing timing test | `app/src/test` |
-| Device tests | `androidx.test` (ext-junit 1.2.1, runner 1.6.2) — run on a phone, not in CI | `app/src/androidTest` |
-| Permissions | `CAMERA` only, no `INTERNET` (the merged manifest also carries AndroidX's app-private `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`); camera and accelerometer declared as required features; backups off | `AndroidManifest.xml` |
+| Dil | Kotlin 2.0.21, JVM hedefi 17 | `android/gradle/libs.versions.toml`, `app/build.gradle.kts` |
+| Derleme | Android Gradle Plugin 8.7.3, Gradle 8.10.2 (wrapper) | `libs.versions.toml`, `gradle-wrapper.properties` |
+| SDK seviyeleri | min 26 (Android 8.0), compile / target 35 | `app/build.gradle.kts` |
+| Arayüz | Jetpack Compose (BOM 2024.12.01), Material 3, Activity-Compose 1.9.3, Lifecycle 2.8.7 | `libs.versions.toml` |
+| Kamera | CameraX 1.4.1 (`core`, `camera2`, `lifecycle`, `view`); sıfır deklanşör gecikmeli çekim; dikey yön kilitli | `libs.versions.toml`, `CekimEkrani.kt` |
+| Yön algılama | `SensorManager` `TYPE_GRAVITY`; halka tampon + karenin donanım zaman damgasında doğrusal enterpolasyon | `sensor/` |
+| Çıkarım | TensorFlow Lite 2.16.1, 4 CPU iş parçacığı, modeller bellek eşlemeli (`noCompress += tflite`) | `libs.versions.toml`, `OlcumZinciri.kt` |
+| Release ABI'leri | `arm64-v8a`, `armeabi-v7a` (debug, emülatör için evrensel kalır) | `app/build.gradle.kts` |
+| Birim testleri | JUnit 4.13.2; altın veri CSV'leri; JVM ön işleme zamanlama testi | `app/src/test` |
+| Cihaz testleri | `androidx.test` (ext-junit 1.2.1, runner 1.6.2) — telefonda çalışır, CI'da çalışmaz | `app/src/androidTest` |
+| İzinler | Yalnızca `CAMERA`, `INTERNET` yok (birleştirilmiş manifestte AndroidX'in uygulamaya özel `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` izni de var); kamera ve ivmeölçer zorunlu özellik; yedekleme kapalı | `AndroidManifest.xml` |
 
-## Models and training
+## Modeller ve eğitim
 
-| Concern | Choice |
+| Konu | Seçim |
 |---|---|
-| Stage 1 | Ultralytics YOLO11n-pose, fine-tuned for 7 keypoints at 640 × 640 |
-| Stage 2 | torchvision MobileNetV3-small (first 9 feature blocks, stride 16) + 3 transposed convolutions + a 64 × 64 heatmap per landmark type, soft-argmax readout |
-| Framework | PyTorch (CUDA; RTX 50xx / Blackwell needs the `cu128` wheels) |
-| Annotation | Roboflow (keypoint export), cleaned and de-duplicated by `scripts/00`–`12` |
-| Validation | Group-aware 5-fold cross-validation (`scripts/45`, `46`) |
-| Export | PyTorch → ONNX (`scripts/22`, `51`) → `onnx2tf` → TFLite float16 (`scripts/25`, `52`) |
-| Quantisation | float16 shipped; full-integer INT8 was tried and fails for Stage 1 (see METRICS §2.1) |
+| Aşama 1 | Ultralytics YOLO11n-pose, 640 × 640'ta 7 keypoint için ince ayar |
+| Aşama 2 | torchvision MobileNetV3-small (ilk 9 özellik bloğu, stride 16) + 3 transpoze konvolüsyon + landmark tipi başına 64 × 64 ısı haritası, soft-argmax okuması |
+| Çerçeve | PyTorch (CUDA; RTX 50xx / Blackwell için `cu128` wheel'leri gerekir) |
+| Etiketleme | Roboflow (keypoint dışa aktarımı); `scripts/00`–`12` ile temizlendi, yinelemeler ayıklandı |
+| Doğrulama | Grup duyarlı 5 katlı çapraz doğrulama (`scripts/45`, `46`) |
+| Dışa aktarma | PyTorch → ONNX (`scripts/22`, `51`) → `onnx2tf` → TFLite float16 (`scripts/25`, `52`) |
+| Kuantizasyon | float16 kullanılıyor; tam tamsayı INT8 denendi ve Aşama 1 için çalışmıyor (bkz. METRICS §2.1) |
 
-Python dependency sets: [`requirements/`](../requirements) — `dev`, `bench`,
-`train`, `export`. Export uses its own virtual environment because TensorFlow
-and `onnx2tf` pin NumPy / protobuf versions that conflict with training.
+Python bağımlılık setleri: [`requirements/`](../requirements) — `dev`, `bench`, `train`,
+`export`. Dışa aktarma kendi sanal ortamında çalışır; çünkü TensorFlow ve `onnx2tf`,
+eğitim yığınıyla çakışan NumPy / protobuf sürümleri ister.
 
-## Metrics, benchmarks and quality gates
+## Metrikler, benchmark'lar ve kalite kapıları
 
-| Concern | Choice |
+| Konu | Seçim |
 |---|---|
-| Package | `skolyoz_metrics` — standard library only at runtime (`bench` extras bring torch, ultralytics, a TFLite runtime) |
-| Source of truth | `metrics/results.json` validated by `metrics/results.schema.json`; benchmark runs by `metrics/benchmark.schema.json` |
-| Generated docs | `docs/METRICS.md` and the headline table in both READMEs (`python -m skolyoz_metrics render`) |
-| Statistics | linear-interpolation percentiles; Wilson score intervals for proportions |
-| Lint / test | Ruff (E, F, I, UP, B) and pytest; research scripts are excluded from lint |
-| CI | GitHub Actions: `ci.yml` (lint, tests, metrics check, benchmark smoke run), `android.yml` (wrapper validation, Gradle tests, debug build) |
-| Dependency updates | Dependabot for Actions, pip and Gradle |
+| Paket | `skolyoz_metrics` — çalışma zamanında yalnızca standart kütüphane (`bench` ek bağımlılıkları torch, ultralytics ve bir TFLite çalışma zamanı getirir) |
+| Tek kaynak | `metrics/results.json`, `metrics/results.schema.json` ile; benchmark koşuları `metrics/benchmark.schema.json` ile doğrulanır |
+| Üretilen dokümanlar | `docs/METRICS.md` ve iki README'deki başlıca metrik tablosu (`python -m skolyoz_metrics render`) |
+| İstatistik | Doğrusal enterpolasyonlu yüzdelikler; oranlar için Wilson skor aralıkları |
+| Lint / test | Ruff (E, F, I, UP, B) ve pytest; araştırma betikleri lint dışındadır |
+| CI | GitHub Actions: `ci.yml` (lint, testler, metrik denetimi, benchmark duman koşusu), `android.yml` (wrapper doğrulama, Gradle testleri, debug derleme) |
+| Bağımlılık güncellemeleri | Dependabot: Actions ve Gradle, aylık ve gruplu; büyük sürümler elle |
 
-## Tooling the benchmark numbers were produced with
+## Benchmark sayılarının üretildiği araçlar
 
-`torch 2.5.1`, `ultralytics 8.4.38`, `ai-edge-litert 2.3.0`, Python 3.11 on
-Windows 11; the exact machine and thread settings are recorded inside every
-file in `metrics/benchmarks/`.
+`torch 2.5.1`, `ultralytics 8.4.38`, `ai-edge-litert 2.3.0`, Windows 11 üzerinde
+Python 3.11; tam makine ve iş parçacığı ayarları `metrics/benchmarks/` içindeki her
+dosyaya yazılıdır.
