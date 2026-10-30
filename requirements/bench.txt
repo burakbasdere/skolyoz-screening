@@ -4,5 +4,5 @@
 numpy>=1.26
 torch>=2.2
 torchvision>=0.17
-ultralytics>=8.4,<9
+ultralytics>=8.4.191,<9
 ai-edge-litert>=1.0
