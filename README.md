@@ -1,11 +1,11 @@
-# Skolyoz — radiation-free back-asymmetry screening on a phone
+# Skolyoz — telefonla radyasyonsuz sırt asimetrisi taraması
 
-**A single back photograph, analysed entirely on the phone, gives a screening
-indicator for trunk asymmetry.** Seven anatomical landmarks are detected; the
-**axillary tilt** and the **coronal balance** are computed from them, and the
-phone's own IMU removes the error caused by holding the camera crooked.
+**Tek bir sırt fotoğrafından, tamamen telefonun içinde, gövde asimetrisi için bir
+tarama göstergesi üretir.** Yedi anatomik nokta tespit edilir; bunlardan
+**aksiller eğim açısı** ve **koronal denge** hesaplanır. Kameranın eğik tutulmasından
+doğan hata telefonun kendi IMU sensörüyle giderilir.
 
-🇹🇷 [Türkçe README](README.tr.md)
+🇬🇧 [English README](README.md)
 
 ![Android](https://img.shields.io/badge/Android-min%20SDK%2026-3DDC84)
 ![TFLite](https://img.shields.io/badge/TFLite-float16-FF6F00)
@@ -13,154 +13,128 @@ phone's own IMU removes the error caused by holding the camera crooked.
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)
 
 > [!WARNING]
-> **This is research software and a screening aid, not a diagnostic tool.** It
-> measures *surface asymmetry*, which is **not** the radiographic Cobb angle,
-> and it has not been validated on patients or cleared as a medical device.
-> Do not use it to make clinical decisions.
+> **Bu bir araştırma yazılımı ve tarama yardımcısıdır; tanı aracı değildir.**
+> Ölçtüğü şey *yüzey asimetrisidir*, radyografik **Cobb açısı değildir**; hastalar
+> üzerinde doğrulanmamış ve tıbbi cihaz olarak onaylanmamıştır. Klinik karar
+> vermek için kullanılmamalıdır.
 
-## Headline metrics
+## Başlıca metrikler
 
 <!-- headline:begin -->
-| Metric | Value | Evidence |
+| Metrik | Değer | Kanıt |
 |---|---|---|
-| Axillary-tilt error, median / p90 | 0.271° / 1.237° | reported |
-| Coronal-balance error, median / p90 | 1.292° / 3.385° | reported |
-| Axillary landmark error, median (label noise floor) | 3.045 px (2.45 px) | reported |
-| Screening recall at ≥ 3° tilt (held-out split, n = 50) | 93.8 % (15/16; 95 % CI 71.7–98.9 %) | reported |
-| Model size, both stages, float16 | 6.44 MB | measured |
-| Parameters, Stage 1 / Stage 2 | 2.69 M / 0.41 M | measured |
-| Model forward, 1 × Stage 1 + 7 × Stage 2 (TFLite, CPU, median / p90) | 70.8 ms / 75.7 ms — 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz | measured |
-| Kotlin ↔ Python parity (golden data) | 42 JVM + 4 device tests; reported diff 0.000 px / 0.0000° | reported |
-| Open gaps | 5 listed — see [docs/METRICS.md](docs/METRICS.md#8-known-gaps) | — |
+| Aksiller eğim hatası, medyan / p90 | 0.271° / 1.237° | raporlanan |
+| Koronal denge hatası, medyan / p90 | 1.292° / 3.385° | raporlanan |
+| Aksiller landmark hatası, medyan (etiket gürültü tabanı) | 3.045 px (2.45 px) | raporlanan |
+| Tarama duyarlılığı, eğim ≥ 3° (ayrılmış küme, n = 50) | 93.8 % (15/16; %95 GA 71.7–98.9 %) | raporlanan |
+| Model boyutu, iki aşama, float16 | 6.44 MB | ölçülen |
+| Parametre sayısı, Aşama 1 / Aşama 2 | 2.69 M / 0.41 M | ölçülen |
+| Model ileri geçişi, 1 × Aşama 1 + 7 × Aşama 2 (TFLite, CPU, medyan / p90) | 70.8 ms / 75.7 ms — 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz | ölçülen |
+| Kotlin ↔ Python eşdeğerliği (altın veri) | 42 JVM + 4 cihaz testi; raporlanan fark 0.000 px / 0.0000° | raporlanan |
+| Açık boşluklar | 5 madde — bkz. [docs/METRICS.md](docs/METRICS.md#8-known-gaps) | — |
 <!-- headline:end -->
 
-Read [docs/METRICS.md](docs/METRICS.md) before quoting any of this. It states
-what each number means, how it was obtained, how uncertain it is, and — in the
-*Known gaps* section — what has **not** been measured. In short: the accuracy
-figures are offline experiments on a small web-sourced image set (337 images),
-the on-device accuracy and phone-photo accuracy are open, and the Cobb estimate
-shown in the app is unvalidated.
+Bu sayıları alıntılamadan önce [docs/METRICS.md](docs/METRICS.md) dosyasını okuyun
+(İngilizce): her sayının ne anlama geldiğini, nasıl elde edildiğini, ne kadar
+belirsiz olduğunu ve *Known gaps* bölümünde **neyin ölçülmediğini** anlatır. Kısaca:
+doğruluk rakamları 337 görüntülük, web kaynaklı küçük bir kümede yapılmış çevrimdışı
+deneylerdir; cihaz üstü ve telefon fotoğrafı doğruluğu açık sorudur; uygulamada
+gösterilen Cobb tahmini doğrulanmamıştır.
 
-Every number in the table above is generated from
-[`metrics/results.json`](metrics/results.json) and
-[`metrics/benchmarks/`](metrics/benchmarks); CI fails if they drift apart.
+Yukarıdaki tablodaki her sayı [`metrics/results.json`](metrics/results.json) ve
+[`metrics/benchmarks/`](metrics/benchmarks) dosyalarından üretilir; ikisi ayrışırsa CI başarısız olur.
 
-## How it works
+## Nasıl çalışır
 
 ```
-Photo (CameraX) + simultaneous IMU gravity sample
-   │  resize to 640×640 (training-time stretch, reproduced exactly)
+Fotoğraf (CameraX) + eşzamanlı IMU yerçekimi örneği
+   │  640×640'a yeniden boyutlandırma (eğitimdeki germe birebir tekrarlanır)
    ▼
-Stage 1 — YOLO11n-pose, fine-tuned: coarse position of 7 landmarks
+Aşama 1 — YOLO11n-pose (ince ayar): 7 landmark'ın kaba konumu
    ▼
-Stage 2 — MobileNetV3-small + heatmap + soft-argmax, once per landmark:
-          128×128 crop around the coarse point → sub-pixel position
+Aşama 2 — MobileNetV3-small + ısı haritası + soft-argmax, landmark başına bir kez:
+          kaba nokta çevresinden 128×128 kırpım → alt-piksel konum
    ▼
-Map back to the original resolution; measurement in pure geometry
-   ├─ axillary tilt  = atan2(Δy, |Δx|) of the two armpit points − IMU roll
-   └─ coronal balance = lateral offset of C7 from the plumb line through the sacrum
+Orijinal çözünürlüğe geri dönüşüm; ölçüm saf geometri
+   ├─ aksiller eğim   = iki koltuk altı noktasının atan2(Δy, |Δx|) değeri − IMU roll
+   └─ koronal denge   = C7'nin sakrumdan geçen şakül hattına yatay sapması
    ▼
-Gates: |pitch| > 8° rejects the shot · low-confidence heatmaps are rejected
+Kapılar: |pitch| > 8° çekimi reddeder · düşük güvenli ısı haritaları reddedilir
 ```
 
-Why two stages: a single network regressing coordinates directly plateaued at
-the same ≈24 px error on training, validation and test data, so the limit was
-the representation, not the amount of data. Details and the measured effect:
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+İki aşama neden: koordinatı doğrudan regrese eden tek ağ, eğitim/doğrulama/test
+kümelerinde aynı ≈24 px hatada takıldı; sınır veri miktarı değil, temsil biçimiydi.
+Ayrıntı: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Technology
+## Teknoloji
 
-| Layer | Stack |
+| Katman | Altyapı |
 |---|---|
-| Mobile app | Kotlin 2.0, Jetpack Compose + Material 3, CameraX 1.4, TensorFlow Lite 2.16 (float16, 4 threads), Android min SDK 26 |
-| Models | Ultralytics YOLO11n-pose (Stage 1), torchvision MobileNetV3-small + custom heatmap head (Stage 2), trained in PyTorch |
-| Export | PyTorch → ONNX → `onnx2tf` → TFLite float16 |
-| Metrics & benchmarks | Python package [`skolyoz_metrics`](skolyoz_metrics): JSON-schema-checked results, generated docs, data-free latency benchmarks |
-| Quality gates | GitHub Actions: Ruff, pytest (incl. Python↔Kotlin golden-data parity), metrics drift check, Gradle unit tests |
+| Mobil uygulama | Kotlin 2.0, Jetpack Compose + Material 3, CameraX 1.4, TensorFlow Lite 2.16 (float16, 4 iş parçacığı), Android min SDK 26 |
+| Modeller | Ultralytics YOLO11n-pose (Aşama 1), torchvision MobileNetV3-small + özel ısı haritası başlığı (Aşama 2); PyTorch ile eğitildi |
+| Dışa aktarma | PyTorch → ONNX → `onnx2tf` → TFLite float16 |
+| Metrik ve benchmark | Python paketi [`skolyoz_metrics`](skolyoz_metrics): şema denetimli sonuçlar, üretilmiş dokümanlar, veri gerektirmeyen gecikme ölçümleri |
+| Kalite kapıları | GitHub Actions: Ruff, pytest (Python↔Kotlin altın veri eşdeğerliği dahil), metrik sapma denetimi, Gradle birim testleri |
 
-Versions and where each is pinned: [docs/TECH_STACK.md](docs/TECH_STACK.md).
+Sürümler ve nerede sabitlendikleri: [docs/TECH_STACK.md](docs/TECH_STACK.md).
 
-## Quick start
+## Hızlı başlangıç
 
-**Check the metrics and run the tests** — no GPU, no private data:
+**Metrikleri denetle ve testleri çalıştır** — GPU ve özel veri gerekmez:
 
 ```bash
 pip install -r requirements/dev.txt
-python -m skolyoz_metrics check     # schema + consistency + generated docs in sync
+python -m skolyoz_metrics check     # şema + tutarlılık + üretilmiş dokümanlar senkron mu
 pytest
 ruff check .
 ```
 
-**Benchmark the model architectures** — random weights, synthetic input:
+**Model mimarilerini ölç** — rastgele ağırlık, sentetik girdi:
 
 ```bash
 pip install -r requirements/bench.txt
-python -m skolyoz_metrics bench arch                                   # PyTorch
+python -m skolyoz_metrics bench arch
 python -m skolyoz_metrics bench tflite --stage1 asama1.tflite --stage2 asama2.tflite
-python -m skolyoz_metrics render                                       # refresh docs
+python -m skolyoz_metrics render    # dokümanları yenile
 ```
 
-See [docs/BENCHMARKING.md](docs/BENCHMARKING.md) for what is and is not measured.
-
-**Build the Android app** (JDK 17; set `JAVA_HOME` to Android Studio's JBR):
+**Android uygulamasını derle** (JDK 17; `JAVA_HOME` Android Studio JBR'sini göstermeli):
 
 ```bash
 cd android
-./gradlew :app:testDebugUnitTest     # JVM tests, no device and no model files needed
+./gradlew :app:testDebugUnitTest     # JVM testleri; cihaz ve model dosyası gerekmez
 ./gradlew :app:assembleDebug
 ```
 
-The trained model files are **not** distributed (see
-[docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md)). To run the app, put
-`asama1.tflite` and `asama2.tflite` in `android/app/src/main/assets/`.
+Eğitilmiş model dosyaları **dağıtılmaz** ([docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md)).
+Uygulamayı çalıştırmak için `asama1.tflite` ve `asama2.tflite` dosyalarını
+`android/app/src/main/assets/` altına koyun.
 
-**Reproduce the research** (`scripts/00`–`52`) needs the private image set and
-a CUDA GPU; see [requirements/train.txt](requirements/train.txt) and the
-Turkish research notes in [docs/tr/](docs/tr).
+**Araştırmayı yeniden üretmek** (`scripts/00`–`52`) özel görüntü kümesi ve CUDA'lı bir GPU
+gerektirir. Türkçe araştırma notları: [docs/tr/](docs/tr).
 
-## Repository layout
+## Bilinen sınırlar
 
-```
-android/            Kotlin app (+ golden-data unit tests)
-scripts/            numbered research pipeline, 00 → 52 (frozen record of the experiments)
-skolyoz_metrics/    metrics tooling and benchmarks (the maintained Python code)
-metrics/            results.json (+ schemas) and recorded benchmark runs
-tests/              pytest suite
-docs/               METRICS.md (generated), ARCHITECTURE, TECH_STACK, BENCHMARKING, MODEL_CARD, ...
-docs/tr/            original Turkish technical report and working notes
-requirements/       dependency sets: dev, bench, train, export
-.github/            CI workflows, Dependabot, issue / PR templates
-```
+1. **Alan kayması.** Eğitim görüntüleri web kaynaklı; telefon fotoğrafları farklı bir dağılımdan geliyor.
+   Aynı sahnenin art arda üç çekimi 1.25°, 3.37° ve 6.73° verdi. Güven kapısı kararsız ölçümü
+   yanlış açı göstermek yerine reddeder ama nedeni çözmez — çözüm telefonla toplanmış eğitim verisidir.
+2. **Omurga eğrilik profili yok.** Yüzeydeki orta hat sapması (gövde boyunun ≈%1.4'ü) etiket
+   gürültüsünün altında kalıyor; bu varsayılmadı, ölçülerek gösterildi.
+3. **Cobb doğrulaması yok.** Radyografi eşleşmeli veri yok; burada hiçbir şey Cobb açısı tahmin etmez.
+   Uygulamadaki Cobb tahmini kalibre edilmemiş katsayılar kullanır —
+   [docs/METRICS.md](docs/METRICS.md#8-known-gaps) içindeki `cobb_estimate` maddesine bakın.
 
-## Known limitations
+## Gizlilik, veri ve lisans
 
-1. **Domain gap.** Training images are web-sourced; phone photos come from a
-   different distribution. Three consecutive shots of one scene gave 1.25°,
-   3.37° and 6.73°. A confidence gate now rejects unstable measurements instead
-   of showing a wrong angle, but it does not fix the cause — phone-captured
-   training data does.
-2. **No spine-curve profile.** The surface midline deviation (≈1.4 % of trunk
-   height) is below the label noise of the data; this was shown by measurement,
-   not assumed.
-3. **No Cobb validation.** There is no radiograph-paired data, so nothing here
-   estimates a Cobb angle. The app's Cobb estimate uses uncalibrated
-   coefficients — see the `cobb_estimate` entry in
-   [docs/METRICS.md](docs/METRICS.md#8-known-gaps).
+Çıkarım cihaz üzerinde çalışır; uygulamanın manifestosu yalnızca `CAMERA` iznini ister
+(`INTERNET` yok) ve yedeklemeyi kapatır. Hasta fotoğrafları asla commit edilmez (`.gitignore`).
+Eğitim verisinin kaynağı, üçüncü taraf lisansları ve Ultralytics'in AGPL-3.0 sonuçları
+[docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md) içinde.
 
-## Privacy, data and licence
+**Lisans: henüz seçilmedi.** `LICENSE` dosyası eklenene kadar kod "tüm hakları saklıdır" durumundadır.
+Seçim Ultralytics bağımlılığı nedeniyle kısıtlıdır; ilgili dokümana bakın.
 
-Inference runs on the device; the app's manifest requests only the `CAMERA`
-permission (no `INTERNET`) and disables backups. Patient photographs are never
-committed (`.gitignore`). Training data provenance, third-party licences and the
-AGPL-3.0 implications of Ultralytics are in
-[docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md).
+## Katkı
 
-**Licence: not yet chosen.** Until a `LICENSE` file is added the code is "all
-rights reserved". The choice is constrained by the Ultralytics dependency — see
-that document.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). The one rule that matters: a change that
-touches a number must go through `metrics/results.json` with a status and a
-source.
+[CONTRIBUTING.md](CONTRIBUTING.md) dosyasına bakın. Önemli tek kural: bir sayıya dokunan
+her değişiklik `metrics/results.json` üzerinden, durum ve kaynak belirtilerek yapılır.

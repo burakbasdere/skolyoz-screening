@@ -1,14 +1,22 @@
+# Aylık ve gruplu: tek PR, gürültü yok.
+# requirements/ aralık (alt sınır) belirtir, sabitleme yapmaz; bu yüzden pip burada yok.
+# Gradle'da büyük sürüm sıçramaları (AGP, Gradle, Kotlin) bilerek elle yapılır.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-  - package-ecosystem: pip
-    directory: /requirements
-    schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
   - package-ecosystem: gradle
     directory: /android
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      gradle:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
