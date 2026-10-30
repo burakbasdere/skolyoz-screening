@@ -2,7 +2,7 @@
 # Install a CPU-only torch to keep it small:
 #   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 numpy>=1.26
-torch>=2.2
+torch>=2.14.1
 torchvision>=0.17
 ultralytics>=8.4,<9
 ai-edge-litert>=1.0
