@@ -1,0 +1,13 @@
+# Model export: PyTorch -> ONNX -> TFLite (scripts/22, 25, 26, 51, 52).
+# Use a SEPARATE virtual environment: TensorFlow / onnx2tf pin numpy and
+# protobuf versions that conflict with the training stack. The original
+# project called it `.venv-tflite`.
+#
+# Versions are not pinned because the original set was never frozen.
+numpy
+pillow
+onnx
+onnxruntime
+onnx2tf
+tensorflow
+ai-edge-litert

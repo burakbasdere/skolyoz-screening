@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_adi">Skolyoz Ölçüm</string>
+    <string name="tibbi_uyari">Tanı aracı değildir · tarama amaçlıdır</string>
+</resources>

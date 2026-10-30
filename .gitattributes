@@ -1,0 +1,10 @@
+# Normalise line endings: the generated docs are compared byte-for-byte in CI.
+* text=auto eol=lf
+
+*.bat text eol=crlf
+gradlew text eol=lf
+
+*.jar binary
+*.tflite binary
+*.png binary
+*.pdf binary

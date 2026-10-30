@@ -1,0 +1,11 @@
+*.iml
+.gradle/
+build/
+local.properties
+.idea/
+.cxx/
+captures/
+.externalNativeBuild/
+
+# Model agirliklari elle kopyalanir, commit EDILMEZ (MOBIL_YAPILACAKLAR.md §8)
+app/src/main/assets/*.tflite
