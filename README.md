@@ -52,28 +52,6 @@ Kapılar: |pitch| > 8° çekimi reddeder · düşük güvenli ısı haritaları 
 kümelerinde aynı ≈24 px hatada takıldı; sınır veri miktarı değil, temsil biçimiydi.
 Ayrıntı: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Örnek çıktılar
-
-Aşağıdakiler, gönderilen gerçek TFLite modellerinin **çizilmiş (sentetik) bir sırt figürü**
-üzerindeki çıktılarıdır; bu beş görüntünün hiçbiri gerçek bir kişiye ait değildir. Bunlar başarım kanıtı
-değil, boru hattının ne yaptığının gösterimidir: modeller gerçek fotoğraflarla eğitildi ve çizilmiş
-figürde nokta hatası belirgin (5° çizilen eğim 3.3° bulundu). Sayılar ve tüm noktalar:
-[docs/ORNEKLER.md](docs/ORNEKLER.md).
-
-<table>
-<tr>
-<td align="center"><img src="docs/img/ornekler/duz.png" width="250" alt="Simetrik figür: aksiller eğim +0.33°"><br><sub><b>Simetrik figür</b><br>eğim +0.33°, kapı geçti</sub></td>
-<td align="center"><img src="docs/img/ornekler/asimetri.png" width="250" alt="Sağ omuz yüksek figür: aksiller eğim +3.34°"><br><sub><b>Sağ omuz yüksek</b><br>çizimde 5°, ölçülen +3.34°</sub></td>
-<td align="center"><img src="docs/img/ornekler/bulanik.png" width="250" alt="Bulanık çekim: güven kapısı reddeder"><br><sub><b>Bulanık çekim</b><br>kapı reddeder (entropi 3.74)</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="docs/img/ornekler/pitch.png" width="250" alt="Telefon 11 derece yatık: ölçüm geçersiz"><br><sub><b>Telefon 11° yatık</b><br>deklanşör kilitli</sub></td>
-<td align="center"><img src="docs/img/ornekler/kisi-yok.png" width="250" alt="Boş kare: kişi bulunamadı"><br><sub><b>Karede kimse yok</b><br>ölçüm yapılmaz</sub></td>
-<td></td>
-</tr>
-</table>
-
-Yeniden üretmek için model dosyaları gerekir: `python -m skolyoz_metrics demo --stage1 asama1.tflite --stage2 asama2.tflite`.
 
 ## Depoda neler var
 
