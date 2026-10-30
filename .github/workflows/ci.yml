@@ -48,7 +48,7 @@ jobs:
         run: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
       - run: pip install -r requirements/dev.txt -r requirements/bench.txt
       # Parametre sayıları, FLOP sayacı ve çıktı şekilleri yayımlanan metriklerle eşleşmeli.
-      - run: pytest tests/test_bench_arch.py tests/test_bench_tflite.py
+      - run: pytest tests/test_bench_arch.py tests/test_bench_tflite.py tests/test_demo.py
       - name: Benchmark (CPU, sentetik girdi)
         run: python -m skolyoz_metrics bench arch --devices cpu --warmup 5 --repeat 30 --out "$RUNNER_TEMP/arch-ci.json"
       # Paylaşımlı runner'lar gürültülü: sonuç commit edilmez, artifact olarak saklanır.

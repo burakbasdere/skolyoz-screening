@@ -40,6 +40,29 @@ Kapılar: |pitch| > 8° çekimi reddeder · düşük güvenli ısı haritaları 
 kümelerinde aynı ≈24 px hatada takıldı; sınır veri miktarı değil, temsil biçimiydi.
 Ayrıntı: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## Örnek çıktılar
+
+Aşağıdakiler, gönderilen gerçek TFLite modellerinin **çizilmiş (sentetik) bir sırt figürü**
+üzerindeki çıktılarıdır; hiçbir görüntü gerçek bir kişiye ait değildir. Bunlar başarım kanıtı
+değil, boru hattının ne yaptığının gösterimidir: modeller gerçek fotoğraflarla eğitildi ve çizilmiş
+figürde nokta hatası belirgin (5° çizilen eğim 3.3° bulundu). Sayılar ve tüm noktalar:
+[docs/ORNEKLER.md](docs/ORNEKLER.md).
+
+<table>
+<tr>
+<td align="center"><img src="docs/img/ornekler/duz.png" width="250" alt="Simetrik figür: aksiller eğim +0.33°"><br><sub><b>Simetrik figür</b><br>eğim +0.33°, kapı geçti</sub></td>
+<td align="center"><img src="docs/img/ornekler/asimetri.png" width="250" alt="Sağ omuz yüksek figür: aksiller eğim +3.34°"><br><sub><b>Sağ omuz yüksek</b><br>çizimde 5°, ölçülen +3.34°</sub></td>
+<td align="center"><img src="docs/img/ornekler/bulanik.png" width="250" alt="Bulanık çekim: güven kapısı reddeder"><br><sub><b>Bulanık çekim</b><br>kapı reddeder (entropi 3.74)</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/img/ornekler/pitch.png" width="250" alt="Telefon 11 derece yatık: ölçüm geçersiz"><br><sub><b>Telefon 11° yatık</b><br>deklanşör kilitli</sub></td>
+<td align="center"><img src="docs/img/ornekler/kisi-yok.png" width="250" alt="Boş kare: kişi bulunamadı"><br><sub><b>Karede kimse yok</b><br>ölçüm yapılmaz</sub></td>
+<td></td>
+</tr>
+</table>
+
+Yeniden üretmek için model dosyaları gerekir: `python -m skolyoz_metrics demo --stage1 asama1.tflite --stage2 asama2.tflite`.
+
 ## Depoda neler var
 
 Bu depo yalnızca bir sonuç sayfası değil; uygulamanın, araştırma hattının ve ölçüm
@@ -119,7 +142,7 @@ Sürümler ve nerede sabitlendikleri: [docs/TECH_STACK.md](docs/TECH_STACK.md).
 | Parametre sayısı, Aşama 1 / Aşama 2 | 2.69 M / 0.41 M | ölçülen |
 | Model ileri geçişi, 1 × Aşama 1 + 7 × Aşama 2 (TFLite, CPU, medyan / p90) | 70.8 ms / 75.7 ms — 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz | ölçülen |
 | Kotlin ↔ Python eşdeğerliği (altın veri) | 42 JVM + 4 cihaz testi; raporlanan fark 0.000 px / 0.0000° | raporlanan |
-| Açık boşluklar | 5 madde — bkz. [docs/METRICS.md](docs/METRICS.md#8-bilinen-boşluklar) | — |
+| Açık boşluklar | 6 madde — bkz. [docs/METRICS.md](docs/METRICS.md#8-bilinen-boşluklar) | — |
 <!-- headline:end -->
 
 ### Grafikler
@@ -162,7 +185,10 @@ Yukarıdaki tablodaki her sayı [`metrics/results.json`](metrics/results.json) v
    yanlış açı göstermek yerine reddeder ama nedeni çözmez — çözüm telefonla toplanmış eğitim verisidir.
 2. **Omurga eğrilik profili yok.** Yüzeydeki orta hat sapması (gövde boyunun ≈%1.4'ü) etiket
    gürültüsünün altında kalıyor; bu varsayılmadı, ölçülerek gösterildi.
-3. **Cobb doğrulaması yok.** Radyografi eşleşmeli veri yok; burada hiçbir şey Cobb açısı tahmin etmez.
+3. **IMU roll düzeltmesinin işareti doğrulanmadı.** Çizim ve formül birbirini tutmuyor; belgelerde
+   cihazda doğrulandığına dair kayıt yok ([docs/METRICS.md](docs/METRICS.md#8-bilinen-boşluklar),
+   `imu_roll_sign`). Telefon eğik tutulduğunda düzeltme hatayı artırıyor olabilir.
+4. **Cobb doğrulaması yok.** Radyografi eşleşmeli veri yok; burada hiçbir şey Cobb açısı tahmin etmez.
    Uygulamadaki Cobb tahmini kalibre edilmemiş katsayılar kullanır —
    [docs/METRICS.md](docs/METRICS.md#8-bilinen-boşluklar) içindeki `cobb_estimate` maddesine bakın.
 

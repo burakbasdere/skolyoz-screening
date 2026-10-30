@@ -138,6 +138,18 @@ def cmd_bench_tflite(args: argparse.Namespace) -> int:
     return _finish_bench(args, "tflite", env, payload)
 
 
+def cmd_demo(args: argparse.Namespace) -> int:
+    from . import demo
+
+    out_dir = args.out or (args.root / "docs" / "img" / "ornekler")
+    for ex in demo.run(args.root, args.stage1, args.stage2, out_dir, args.threads):
+        what = (f"reddedildi: {ex.rejected}" if ex.rejected
+                else f"eğim {ex.angle:+.2f}°")
+        print(f"  {ex.name:<10} {what}")
+    print(f"yazıldı: {out_dir} ve docs/ORNEKLER.md")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="skolyoz-metrics", description=__doc__)
     parser.add_argument("--version", action="version", version=__version__)
@@ -174,6 +186,13 @@ def build_parser() -> argparse.ArgumentParser:
     tfl.add_argument("--stage2", type=Path, required=True, help="asama2.tflite")
     common(tfl)
     tfl.set_defaults(func=cmd_bench_tflite)
+
+    demo_p = sub.add_parser("demo", help="sentetik örnek figürde gerçek modellerle örnek çıktılar")
+    demo_p.add_argument("--stage1", type=Path, required=True, help="asama1.tflite")
+    demo_p.add_argument("--stage2", type=Path, required=True, help="asama2.tflite")
+    demo_p.add_argument("--threads", type=int, default=4)
+    demo_p.add_argument("--out", type=Path, help="görüntü klasörü (varsayılan: docs/img/ornekler)")
+    demo_p.set_defaults(func=cmd_demo)
     return parser
 
 

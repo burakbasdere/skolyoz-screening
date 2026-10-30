@@ -1,0 +1,37 @@
+[
+  {
+    "name": "duz",
+    "found": true,
+    "confidence": 0.9036,
+    "angle": 0.3268851691526012,
+    "rejected": null
+  },
+  {
+    "name": "asimetri",
+    "found": true,
+    "confidence": 0.9029,
+    "angle": 3.340749207056367,
+    "rejected": null
+  },
+  {
+    "name": "bulanik",
+    "found": true,
+    "confidence": 0.8911,
+    "angle": -1.9783937433277463,
+    "rejected": "entropi 3.74 > 2.5"
+  },
+  {
+    "name": "pitch",
+    "found": false,
+    "confidence": 0.0,
+    "angle": null,
+    "rejected": "|pitch| 11.0\u00b0 > 8\u00b0"
+  },
+  {
+    "name": "kisi-yok",
+    "found": false,
+    "confidence": 0.0013,
+    "angle": null,
+    "rejected": "ki\u015fi bulunamad\u0131 (g\u00fcven 0.00 < 0.25)"
+  }
+]
