@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "updated": "2026-10-31",
+  "policy": "Every number carries a status. 'reported' = taken from the project's own write-ups and not re-run here (it needs private data). 'measured' = produced by a command in this repository. 'not_measured' / 'unvalidated' = known gaps, listed on purpose.",
+
+  "evaluations": {
+    "cv5_stage2": {
+      "title": "5-fold cross-validation of Stage 2, out-of-fold",
+      "protocol": "Images are grouped by similarity (threshold 0.85) so that near-duplicates never straddle folds. Each fold trains on the other four and is measured on images its model never saw; best-epoch selection uses the fold's own validation part, not the measured part. Stage-2 crops are cut around the label with a uniform random offset of up to 35 px in x and y, simulating Stage-1 localisation error.",
+      "model": "7-landmark Stage 2 (MobileNetV3-small + heatmap + soft-argmax), PyTorch",
+      "n_images": 337,
+      "n_landmarks": 1582,
+      "status": "reported",
+      "source": "docs/tr/TEKNIK_DOKUMAN.md sections 5.5, 6.1, 6.2; scripts/40_rafinaj7_egit.py (JITTER = 35)",
+      "reproduce": ["python scripts/45_rafinaj7_cv.py --kat 5", "python scripts/46_cv_omurga_analiz.py"],
+      "requires_private_data": true
+    },
+    "holdout50": {
+      "title": "Single held-out test split",
+      "protocol": "337 cleaned images split 236 / 51 / 50 (train / val / test) by similarity group. The test split is used once for reporting.",
+      "model": "Two-stage pipeline, PyTorch (earlier 2-landmark generation; the source does not state the model generation of the decision table separately)",
+      "n_images": 50,
+      "status": "reported",
+      "source": "docs/tr/MOBIL_YAPILACAKLAR.md section 2 and Phase 1",
+      "reproduce": ["python scripts/20_tam_degerlendirme.py", "python scripts/26_tflite_degerlendirme.py"],
+      "requires_private_data": true
+    }
+  },
+
+  "landmark_error": {
+    "evaluation": "cv5_stage2",
+    "status": "reported",
+    "source": "docs/tr/TEKNIK_DOKUMAN.md section 6.1",
+    "rows": [
+      {"type": "axillary", "n": 674, "median_px": 3.045, "p90_px": 7.518, "label_floor_px": 2.45},
+      {"type": "c7", "n": 182, "median_px": 11.772, "p90_px": 31.553, "label_floor_px": null},
+      {"type": "sacrum", "n": 180, "median_px": 11.345, "p90_px": 25.354, "label_floor_px": null},
+      {"type": "spine", "n": 546, "median_px": 20.489, "p90_px": 41.958, "label_floor_px": 5.58}
+    ],
+    "notes": [
+      "Errors are in pixels of the 640 x 640 stretched training images.",
+      "The label noise floor for axillary points is the measured disagreement between independent labels of the same photo; for spine points (5.58) it is a leave-one-out upper bound estimated without relabelling.",
+      "Natural spread between folds is 2.1 px: differences smaller than that between two configurations are not statistically meaningful."
+    ]
+  },
+
+  "angle_error": {
+    "evaluation": "cv5_stage2",
+    "status": "reported",
+    "source": "docs/tr/TEKNIK_DOKUMAN.md section 6.2",
+    "rows": [
+      {"measurement": "axillary_tilt", "median_deg": 0.271, "p90_deg": 1.237, "signal_median_deg": 2.21, "label_floor_deg": 0.435},
+      {"measurement": "coronal_balance", "median_deg": 1.292, "p90_deg": 3.385, "signal_median_deg": 1.71, "label_floor_deg": null}
+    ],
+    "label_floor_averaged_deg": 0.232,
+    "notes": [
+      "Signal is the median absolute value of the quantity across the dataset, i.e. the size of what is being measured. Error / signal is derived from the two columns.",
+      "The single-label noise floor is 0.435 degrees; averaging independent labels lowered it to 0.232 (233 of 337 images carry averaged labels).",
+      "These are Stage-2 errors with simulated coarse seeds, NOT an end-to-end measurement with real Stage-1 outputs and NOT an on-device measurement."
+    ]
+  },
+
+  "screening_decision": {
+    "evaluation": "holdout50",
+    "status": "reported",
+    "source": "docs/tr/MOBIL_YAPILACAKLAR.md section 2 (test, n = 50)",
+    "n": 50,
+    "rows": [
+      {"threshold_deg": 3, "positives": 16, "true_positives": 15, "correct": 44, "accuracy": 0.880, "macro_f1": 0.870, "recall": 0.938},
+      {"threshold_deg": 5, "positives": 6, "true_positives": 5, "correct": 46, "accuracy": 0.920, "macro_f1": 0.834, "recall": 0.833},
+      {"threshold_deg": 7, "positives": 4, "true_positives": 4, "correct": 50, "accuracy": 1.000, "macro_f1": 1.000, "recall": 1.000}
+    ],
+    "notes": [
+      "Provenance correction: the previous README attributed this table to the 5-fold cross-validation. The same figures appear in MOBIL_YAPILACAKLAR.md under the n = 50 test split, and '15 of 16 positives' cannot come from a 337-image evaluation, so they are filed here as held-out n = 50 results. Re-run scripts/20 to confirm.",
+      "Wilson 95 % intervals are computed from the counts at render time. With 4 to 16 positives they are wide: the 7 degree row (4 of 4) cannot support any claim.",
+      "Thresholds apply to the axillary tilt, which is a surface-asymmetry indicator, not a Cobb angle."
+    ]
+  },
+
+  "two_stage_ablation": {
+    "evaluation": "holdout50",
+    "status": "reported",
+    "source": "docs/tr/MOBIL_YAPILACAKLAR.md section 2",
+    "rows": [
+      {"metric": "Keypoint error, median", "unit": "px", "stage1": 24.35, "stage1_plus_2": 3.55, "floor": 2.45},
+      {"metric": "Keypoint error, mean", "unit": "px", "stage1": 27.37, "stage1_plus_2": 7.83, "floor": null},
+      {"metric": "Angle error, median", "unit": "deg", "stage1": 2.094, "stage1_plus_2": 0.380, "floor": 0.23},
+      {"metric": "Angle error, p90", "unit": "deg", "stage1": 4.742, "stage1_plus_2": 1.706, "floor": null},
+      {"metric": "PCK@5px", "unit": "%", "stage1": 5, "stage1_plus_2": 72, "floor": null},
+      {"metric": "PCK@10px", "unit": "%", "stage1": 18, "stage1_plus_2": 90, "floor": null}
+    ],
+    "notes": [
+      "Stage 1 alone gave the same ~24 px error on train, validation and test, i.e. it could not even fit its own training data: the bottleneck is the representation, not the amount of data.",
+      "10 % of points still deviate by more than 10 px; the tail is mostly bent or atypical poses."
+    ]
+  },
+
+  "export_variants": {
+    "evaluation": "holdout50",
+    "status": "reported",
+    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Phase 1",
+    "rows": [
+      {"variant": "float16", "selected": true, "size_mb": 6.40, "median_px": 3.44, "median_deg": 0.417, "shoulder_accuracy": 0.860, "note": null},
+      {"variant": "dynamic_range_quant", "selected": false, "size_mb": 3.59, "median_px": 3.80, "median_deg": 0.463, "shoulder_accuracy": 0.820, "note": "Passes the angle criterion but degrades the which-shoulder-is-higher decision."},
+      {"variant": "float32", "selected": false, "size_mb": 12.57, "median_px": 3.45, "median_deg": 0.412, "shoulder_accuracy": 0.860, "note": null},
+      {"variant": "full_integer_int8", "selected": false, "size_mb": 3.58, "median_px": null, "median_deg": null, "shoulder_accuracy": null, "note": "No detection on 50 of 50 images: one shared output scale (3.59) squeezes confidence (0 to 1) into ~0.3 quantisation steps, so nothing passes the 0.25 threshold."},
+      {"variant": "int8_int16_activations", "selected": false, "size_mb": 3.79, "median_px": 35.10, "median_deg": 1.644, "shoulder_accuracy": 0.420, "note": null},
+      {"variant": "pytorch_reference", "selected": false, "size_mb": null, "median_px": 3.55, "median_deg": 0.380, "shoulder_accuracy": 0.860, "note": "float16 costs about 0.04 degrees relative to PyTorch."}
+    ],
+    "notes": [
+      "Measured on the earlier 2-landmark models. The 7-landmark models shipped in v0.1.0 were converted with scripts/52 but their quantisation cost has not been evaluated (see gaps)."
+    ]
+  },
+
+  "model_complexity": {
+    "status": "measured",
+    "source": "python -m skolyoz_metrics bench arch (counts are independent of weights); cross-checked by tests/test_bench_arch.py",
+    "rows": [
+      {"model": "stage1_yolo11n_pose_7kpt", "params": 2688252, "gflops": 6.717, "input": "1x3x640x640", "note": "The 2-landmark variant has 2,661,957 parameters; earlier docs quoted that figure for the 7-landmark model."},
+      {"model": "stage2_rafinaj7", "params": 405340, "gflops": 0.2265, "input": "1x3x128x128", "note": "Called once per landmark (7 x per measurement)."}
+    ]
+  },
+
+  "artifacts": {
+    "status": "measured",
+    "source": "v0.1.0 (build 'v7') release artifacts of the original repository, inspected with zipfile + sha256. The binaries are not part of this repository.",
+    "rows": [
+      {"file": "assets/asama1.tflite", "bytes": 5575676, "sha256": "9737b9d5792b7e6fc8f6a29680ebcf59fac52bca4a01672564b97e5d7648b3d2", "note": "Stage 1, float16, stored uncompressed (mmap)."},
+      {"file": "assets/asama2.tflite", "bytes": 860284, "sha256": "8f59347e45fe4354a986fb05d70acd4fa4f4d9ff69c376f6e3bad3a0d9bdb5b2", "note": "Stage 2, float16, stored uncompressed (mmap)."},
+      {"file": "skolyoz_olcum_v7_release_unsigned.apk", "bytes": 20185230, "sha256": "ec25e58e2c64a657fa277f18225ab62983c7af10dc82e62b9f246ee9d9af23e7", "note": "arm64-v8a + armeabi-v7a only."},
+      {"file": "skolyoz_olcum_v7_debug.apk", "bytes": 33582755, "sha256": "d11fde9e4498e70ad69d10f5bcfcf050736b388383401fd90ceb494abdbfa9cf", "note": "Universal (includes x86 / x86_64)."}
+    ]
+  },
+
+  "parity": {
+    "status": "reported",
+    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Phase 3; android/app/src/test; tests/test_golden_parity.py",
+    "jvm_unit_tests": 42,
+    "instrumented_tests": 4,
+    "golden_rows": {"olcum": 18, "cikarim": 38, "kucultme": 6},
+    "acceptance_tolerance_deg": 0.05,
+    "reported_max_diff_px": 0.0,
+    "reported_max_diff_deg": 0.0,
+    "notes": [
+      "Expected values in the golden CSVs are generated by running the Python reference (scripts/23_altin_veri.py), not written by hand, so the two implementations cannot share a wrong sign convention unnoticed.",
+      "The 0.000 px / 0.0000 degree figure was obtained on a real phone photograph with an identical 640 x 640 input tensor, i.e. it compares the Kotlin and Python measurement and pre-processing code, not model inference.",
+      "The 4 instrumented tests need a physical device and are not run in CI.",
+      "All 42 JVM tests were run on 2026-10-31 with Gradle 8.10.2 and JDK 17: 42 passed, 0 failed, 0 skipped. The 42 includes PerformansTest, a timing test with a very loose bound, and a test of the uncalibrated Cobb placeholder (see gaps)."
+    ]
+  },
+
+  "jvm_preprocessing": {
+    "status": "measured",
+    "source": "./gradlew :app:testDebugUnitTest --tests '*PerformansTest*' on 2026-10-31 (desktop JVM, Android Studio JBR 17, 11th Gen Intel Core i7-11800H); PerformansTest.kt",
+    "rows": [
+      {"step": "Pillow-compatible bilinear downscale, 3000 x 4000 -> 640 x 640", "ms": 104.9},
+      {"step": "two 128 x 128 crops", "ms": 0.6},
+      {"step": "two input tensors (Stage 1 and Stage 2 normalisation)", "ms": 2.8},
+      {"step": "two soft-argmax readouts", "ms": 0.3},
+      {"step": "total, excluding TFLite", "ms": 108.6}
+    ],
+    "notes": [
+      "Mean of 5 repetitions on a desktop JIT-compiled JVM, including warm-up; not Android runtime (ART) timings.",
+      "The app captures at about 3 MP rather than the 12 MP simulated here, which shrinks the downscale cost; the effect was not measured.",
+      "Compare with the model-only forward time in 3.1: pre-processing is not negligible next to inference."
+    ]
+  },
+
+  "device_reported": {
+    "status": "reported",
+    "device": "Redmi Note 9 Pro, Android 12 (API 31)",
+    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Phase 2",
+    "shutter_latency_ms": [
+      {"change": "baseline (MAXIMIZE_QUALITY, JPEG decoded on the main thread)", "total_ms": 1100},
+      {"change": "JPEG decode moved to a background thread, decoded with inSampleSize", "total_ms": 950},
+      {"change": "CAPTURE_MODE_ZERO_SHUTTER_LAG", "total_ms": 588}
+    ],
+    "imu": {
+      "sensor_period_ms": 19.1,
+      "nearest_sample_offsets_ms": [2.3, 7.6],
+      "rotation_error_at_30_deg_per_s_nearest_deg": 0.30,
+      "rotation_error_at_30_deg_per_s_interpolated_deg": 0.01
+    },
+    "notes": [
+      "Shutter latency is the time from pressing the shutter to a delivered frame. It is not model inference time.",
+      "The interpolated figure is an upper bound ('< 0.01') measured in a unit test, not on the device.",
+      "Reducing the capture resolution from 12 MP to ~3 MP was expected to shorten JPEG encoding; that was not verified."
+    ]
+  },
+
+  "robustness": {
+    "status": "reported",
+    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Phase 3.5",
+    "rows": [
+      {"item": "Confidence-gate rejection rate", "value": "5 of 101 measurements (5.0 %)", "context": "validation + test images"},
+      {"item": "Confidence gate on phone photos", "value": "3 of 3 rejected", "context": "three consecutive captures of one scene"},
+      {"item": "Phone-photo repeatability (no gate)", "value": "1.25, 3.37, 6.73 degrees", "context": "same scene, three consecutive frames"},
+      {"item": "Stage 1 stability", "value": "0.4 to 2.5 px", "context": "1/255 input perturbation"},
+      {"item": "Stage 2 stability", "value": "up to 16.8 px", "context": "1/255 input perturbation"},
+      {"item": "Pitch rejection threshold", "value": "|pitch| > 8 degrees", "context": "perspective guard, shutter locked"}
+    ],
+    "notes": [
+      "The gate does not improve the model; it turns silently wrong answers into visible rejections. The root cause is the domain gap between web-sourced training images and phone photographs.",
+      "The gate has not yet been exercised on a real capture campaign."
+    ]
+  },
+
+  "dataset": {
+    "status": "reported",
+    "source": "docs/tr/MOBIL_YAPILACAKLAR.md section 2; docs/tr/TEKNIK_DOKUMAN.md section 5.1",
+    "rows": [
+      {"item": "Raw files in the export", "value": 1119},
+      {"item": "Unique images after de-duplication", "value": 441},
+      {"item": "Unusable images", "value": 74},
+      {"item": "Final images", "value": 337},
+      {"item": "Split train / val / test", "value": "236 / 51 / 50"},
+      {"item": "Images with spine labels", "value": 182},
+      {"item": "Duplicate clusters with left/right label conflicts", "value": "38.8 %"},
+      {"item": "Left/right accuracy of a COCO pose model on back views", "value": "11.7 %"}
+    ],
+    "notes": [
+      "Source: a Roboflow export (see docs/DATA_AND_LICENSING.md). The images are web-sourced and resized to 640 x 640 without preserving aspect ratio; the originals are unavailable."
+    ]
+  },
+
+  "negative_results": {
+    "status": "reported",
+    "source": "docs/tr/TEKNIK_DOKUMAN.md sections 6.3 and 6.4",
+    "rows": [
+      {"approach": "Spine trace by image processing (shadow valley)", "result": "Residual RMS 9.20 % of torso height; 2 of 110 images gave a usable trace.", "reason": "The lowest-intensity point is usually a scapula edge or side shadow, not the spinal groove."},
+      {"approach": "Polynomial fit to average out landmark noise", "result": "Apex-deviation error / signal = 1.01 (degree 3).", "reason": "Landmark errors are correlated, so the curve moves with the error."},
+      {"approach": "Reduce to 3 landmarks (C7, mid-spine, sacrum)", "result": "Convexity-direction accuracy fell from 0.639 to 0.550 (chance baseline 0.494).", "reason": null},
+      {"approach": "Hand-made orientation heuristics", "result": "Silhouette-width profile agreed with the colour cue 50 % of the time (chance).", "reason": "Skin-tone centroid gives no signal on greyscale images."},
+      {"approach": "Spine curvature profile (goal H5)", "result": "Lateral error 5.88 px vs label floor 5.58 px vs signal 6.50 px; convexity accuracy 63.9 % vs 52.8 % for always guessing the majority class.", "reason": "The limit is label quality, not the model."},
+      {"approach": "Single-stage direct coordinate regression", "result": "About 24 px error on train, validation and test alike.", "reason": "Representation, not data volume."}
+    ]
+  },
+
+  "gaps": [
+    {"id": "on_device_inference_latency", "status": "not_measured", "what": "Latency of Stage 1 + 7 x Stage 2 on a phone, and RAM, energy and thermal behaviour.", "why": "Only shutter latency was ever measured on the device. scripts/31 prints a ~100-200 ms target but that was written when the pipeline refined 2 points, not 7.", "next": "Run the benchmark protocol in docs/BENCHMARKING.md on at least one low-end and one mid-range phone."},
+    {"id": "end_to_end_accuracy", "status": "not_measured", "what": "Accuracy of the full chain with real Stage-1 outputs for all 7 landmarks.", "why": "The cross-validation seeds Stage 2 with simulated (+-35 px) offsets instead of real Stage-1 predictions.", "next": "Out-of-fold Stage 1 as well, then evaluate the chain on the out-of-fold images."},
+    {"id": "tflite_accuracy_7_landmarks", "status": "not_measured", "what": "Quantisation cost of the 7-landmark TFLite models.", "why": "Measured only for the 2-landmark models (about +0.04 degrees).", "next": "Extend scripts/26 to the 7-landmark pipeline."},
+    {"id": "phone_photo_accuracy", "status": "not_measured", "what": "Accuracy on photographs captured with a phone under the intended protocol.", "why": "Training and evaluation images are web-sourced; the phone data amounts to a handful of informal captures.", "next": "Collect 200-300 protocol-conformant phone photos with a second independent labelling round."},
+    {"id": "cobb_estimate", "status": "unvalidated", "what": "The Cobb-angle estimate and risk category shown on the Android overlay (Kalibrasyon.cobbTahmini, scripts/48_cobb_kalibrasyon.py).", "why": "Its coefficients (1.25 / 1.10 / 2.40) and the '+-3.5 degree' error margin are not fitted to any radiograph-matched data - none exists in this project - and contradict the project's own rule that the interface must not state a Cobb angle. Treat it as a placeholder, not a measurement.", "next": "Remove it from the UI, or gate it behind a debug flag, until it is calibrated on radiograph-paired data."}
+  ]
+}

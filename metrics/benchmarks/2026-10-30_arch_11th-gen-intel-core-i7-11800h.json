@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "kind": "arch",
+  "created_utc": "2026-10-30T23:01:14Z",
+  "environment": {
+    "os": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "logical_cores": 16,
+    "python": "3.11.9",
+    "commit": null,
+    "torch": "2.5.1+cu121",
+    "cuda_device": "NVIDIA GeForce RTX 3050 Laptop GPU"
+  },
+  "config": {
+    "threads": 4,
+    "warmup": 10,
+    "repeat": 100,
+    "input": "synthetic"
+  },
+  "results": [
+    {
+      "name": "stage1",
+      "device": "cpu",
+      "input_shape": [
+        1,
+        3,
+        640,
+        640
+      ],
+      "params": 2688252,
+      "gflops": 6.717,
+      "latency_ms": {
+        "n": 100,
+        "min": 74.7861,
+        "mean": 91.28707699999997,
+        "std": 17.345076258847158,
+        "p50": 85.394,
+        "p90": 105.25573999999999,
+        "p95": 124.66784,
+        "p99": 165.59173000000007,
+        "max": 178.4548
+      }
+    },
+    {
+      "name": "stage2",
+      "device": "cpu",
+      "input_shape": [
+        1,
+        3,
+        128,
+        128
+      ],
+      "params": 405340,
+      "gflops": 0.2265,
+      "latency_ms": {
+        "n": 100,
+        "min": 6.732,
+        "mean": 9.007401999999999,
+        "std": 1.1979541372462699,
+        "p50": 8.95885,
+        "p90": 10.64741,
+        "p95": 10.875435,
+        "p99": 11.822346000000005,
+        "max": 13.0743
+      }
+    },
+    {
+      "name": "pipeline",
+      "device": "cpu",
+      "input_shape": null,
+      "params": 3093592,
+      "gflops": 8.3025,
+      "latency_ms": {
+        "n": 100,
+        "min": 133.1974,
+        "mean": 175.65313299999994,
+        "std": 35.335134372128465,
+        "p50": 164.43895,
+        "p90": 229.71912,
+        "p95": 251.26901999999998,
+        "p99": 293.5822750000001,
+        "max": 311.4196
+      }
+    },
+    {
+      "name": "stage1",
+      "device": "cuda",
+      "input_shape": [
+        1,
+        3,
+        640,
+        640
+      ],
+      "params": 2688252,
+      "gflops": 6.717,
+      "latency_ms": {
+        "n": 100,
+        "min": 22.9016,
+        "mean": 35.421991999999975,
+        "std": 2.1235805766657223,
+        "p50": 35.57415,
+        "p90": 36.68647,
+        "p95": 36.884975,
+        "p99": 37.076972000000005,
+        "max": 37.3613
+      }
+    },
+    {
+      "name": "stage2",
+      "device": "cuda",
+      "input_shape": [
+        1,
+        3,
+        128,
+        128
+      ],
+      "params": 405340,
+      "gflops": 0.2265,
+      "latency_ms": {
+        "n": 100,
+        "min": 6.4514,
+        "mean": 8.08281,
+        "std": 0.9138825133362706,
+        "p50": 8.18395,
+        "p90": 8.62284,
+        "p95": 8.940919999999998,
+        "p99": 11.606631000000007,
+        "max": 13.164
+      }
+    },
+    {
+      "name": "pipeline",
+      "device": "cuda",
+      "input_shape": null,
+      "params": 3093592,
+      "gflops": 8.3025,
+      "latency_ms": {
+        "n": 100,
+        "min": 61.6341,
+        "mean": 68.854742,
+        "std": 6.8851682175877755,
+        "p50": 66.64355,
+        "p90": 79.09266,
+        "p95": 82.090885,
+        "p99": 85.18690900000003,
+        "max": 88.9795
+      }
+    }
+  ],
+  "notes": [
+    "Random weights, synthetic input; eager PyTorch forward only (no pre/post-processing, no NMS).",
+    "pipeline = 1 x stage1 + 7 x stage2, run sequentially at batch size 1, mirroring OlcumZinciri.kt.",
+    "params counts every learnable parameter; gflops = 2 x multiply-accumulates."
+  ]
+}

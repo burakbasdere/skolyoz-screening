@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "tflite",
+  "created_utc": "2026-10-30T22:59:10Z",
+  "environment": {
+    "os": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "logical_cores": 16,
+    "python": "3.11.9",
+    "commit": null,
+    "tflite_runtime": "ai_edge_litert 2.3.0"
+  },
+  "config": {
+    "threads": 4,
+    "warmup": 10,
+    "repeat": 100,
+    "input": "synthetic"
+  },
+  "results": [
+    {
+      "name": "stage1",
+      "device": "cpu-4t",
+      "latency_ms": {
+        "n": 100,
+        "min": 40.1983,
+        "mean": 46.154948000000005,
+        "std": 4.255808950045677,
+        "p50": 45.11315,
+        "p90": 50.706179999999996,
+        "p95": 53.08668999999998,
+        "p99": 60.26850900000001,
+        "max": 62.685
+      },
+      "model_file": "asama1.tflite",
+      "model_bytes": 5575676,
+      "model_sha256": "9737b9d5792b7e6fc8f6a29680ebcf59fac52bca4a01672564b97e5d7648b3d2",
+      "input_shape": [
+        1,
+        640,
+        640,
+        3
+      ],
+      "input_dtype": "float32",
+      "output_shapes": [
+        [
+          1,
+          26,
+          8400
+        ]
+      ]
+    },
+    {
+      "name": "stage2",
+      "device": "cpu-4t",
+      "latency_ms": {
+        "n": 100,
+        "min": 3.3398,
+        "mean": 4.047600000000002,
+        "std": 0.4295416166147821,
+        "p50": 4.0144,
+        "p90": 4.5047299999999995,
+        "p95": 4.800889999999998,
+        "p99": 5.352785,
+        "max": 5.4107
+      },
+      "model_file": "asama2.tflite",
+      "model_bytes": 860284,
+      "model_sha256": "8f59347e45fe4354a986fb05d70acd4fa4f4d9ff69c376f6e3bad3a0d9bdb5b2",
+      "input_shape": [
+        1,
+        128,
+        128,
+        3
+      ],
+      "input_dtype": "float32",
+      "output_shapes": [
+        [
+          1,
+          64,
+          64,
+          4
+        ]
+      ]
+    },
+    {
+      "name": "pipeline",
+      "device": "cpu-4t",
+      "latency_ms": {
+        "n": 100,
+        "min": 66.0767,
+        "mean": 71.63262099999996,
+        "std": 4.287441375098683,
+        "p50": 70.7525,
+        "p90": 75.72586000000001,
+        "p95": 78.04460999999999,
+        "p99": 92.55028700000001,
+        "max": 93.44
+      }
+    }
+  ],
+  "notes": [
+    "Synthetic random input; Interpreter.invoke() plus set_tensor only (no image decoding, resizing or post-processing).",
+    "pipeline = 1 x stage1 + 7 x stage2, run sequentially, mirroring OlcumZinciri.kt.",
+    "Measured on a desktop/CI CPU through the Python TFLite runtime; this is not Android latency."
+  ]
+}
