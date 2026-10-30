@@ -13,6 +13,12 @@ phone's own IMU removes the error caused by holding the camera crooked.
 ![On-device](https://img.shields.io/badge/inference-on--device-0A7EA4)
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)
 
+<p align="center">
+  <img src="docs/img/referans/skolyoz.webp" width="216" alt="Back view of a spine with scoliosis: surface asymmetry at shoulder, scapula and waist level"><br>
+  <sub><b>Reference image:</b> back view of a spine with scoliosis. What the app measures is this kind of visible surface
+  asymmetry, not the radiographic Cobb angle. Image source and permission: <a href="docs/DATA_AND_LICENSING.md">docs/DATA_AND_LICENSING.md</a> §1 (Turkish).</sub>
+</p>
+
 > [!WARNING]
 > **This is research software and a screening aid, not a diagnostic tool.** It
 > measures *surface asymmetry*, which is **not** the radiographic Cobb angle,
@@ -39,8 +45,8 @@ Gates: |pitch| > 8° rejects the shot · low-confidence heatmaps are rejected
 
 ## Example outputs
 
-These are the shipped TFLite models run on a **drawn (synthetic) back figure**; no image shows a
-real person. They illustrate what the pipeline does, not how well it works: the models were trained
+These are the shipped TFLite models run on a **drawn (synthetic) back figure**; none of these five
+images shows a real person. They illustrate what the pipeline does, not how well it works: the models were trained
 on real photographs, and on the drawn figure the point error is clearly larger (a drawn 5° tilt was
 measured as 3.3°). Numbers and all landmarks: [docs/ORNEKLER.md](docs/ORNEKLER.md) (Turkish).
 

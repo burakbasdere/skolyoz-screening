@@ -12,6 +12,14 @@ Tek istisna dokümantasyon şekilleridir: `docs/` altındaki PNG'lere izin veril
 oraya eklediğiniz her görselin **gerçek bir kişi içermediğini kontrol edin**. (Bu depodaki
 `docs/img/` grafikleri JSON'dan üretilen SVG'lerdir; görüntü içermez.)
 
+**Tek istisna: referans görsel.** `docs/img/referans/skolyoz.webp` (README'nin başında), arkadan
+çekilmiş gerçek bir sırt fotoğrafıdır; yüz görünmez. `.gitignore` bu tek dosyayı ayrıca
+açıkça serbest bırakır (`*.webp` aksi halde dışarıda tutulur). **Kaynağı, lisansı ve çekilen
+kişinin (ya da velisinin) yayımlama rızası projede kayıtlı değil.** Depo herkese açık olduğundan
+bunlardan birini belgeleyin (kaynak + lisans, ya da yazılı rıza); belgelenemiyorsa dosyayı
+silin ve README'deki `<p align="center">` bloğunu kaldırın ya da sentetik bir görselle değiştirin.
+Dosya bir kez geçmişe girdikten sonra silmek yeterli değildir (sonraki paragraf).
+
 Bir hasta görüntüsü commit edilirse bunu sızıntı sayın: sonraki bir commit'te silmek geçmişten
 kaldırmaz. Geçmişi yeniden yazın ve bağlantıları geçersiz kılın. Bkz. [SECURITY.md](../SECURITY.md).
 

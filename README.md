@@ -12,6 +12,12 @@ doğan hata telefonun kendi IMU sensörüyle giderilir.
 ![On-device](https://img.shields.io/badge/inference-on--device-0A7EA4)
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)
 
+<p align="center">
+  <img src="docs/img/referans/skolyoz.webp" width="216" alt="Skolyozlu bir sırtın arkadan görünümü: omuz, kürek kemiği ve bel hizasında yüzey asimetrisi"><br>
+  <sub><b>Referans görsel:</b> skolyozlu bir sırtın arkadan görünümü. Uygulamanın ölçtüğü, bu tür görünür yüzey asimetrisidir;
+  radyografik Cobb açısı değildir. Görselin kaynağı ve kullanım izni: <a href="docs/DATA_AND_LICENSING.md">docs/DATA_AND_LICENSING.md</a> §1.</sub>
+</p>
+
 > [!WARNING]
 > **Bu bir araştırma yazılımı ve tarama yardımcısıdır; tanı aracı değildir.**
 > Ölçtüğü şey *yüzey asimetrisidir*, radyografik **Cobb açısı değildir**; hastalar
@@ -43,7 +49,7 @@ Ayrıntı: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## Örnek çıktılar
 
 Aşağıdakiler, gönderilen gerçek TFLite modellerinin **çizilmiş (sentetik) bir sırt figürü**
-üzerindeki çıktılarıdır; hiçbir görüntü gerçek bir kişiye ait değildir. Bunlar başarım kanıtı
+üzerindeki çıktılarıdır; bu beş görüntünün hiçbiri gerçek bir kişiye ait değildir. Bunlar başarım kanıtı
 değil, boru hattının ne yaptığının gösterimidir: modeller gerçek fotoğraflarla eğitildi ve çizilmiş
 figürde nokta hatası belirgin (5° çizilen eğim 3.3° bulundu). Sayılar ve tüm noktalar:
 [docs/ORNEKLER.md](docs/ORNEKLER.md).
