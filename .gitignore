@@ -17,6 +17,7 @@ c7_bel_sokumu_gorselleri/
 !docs/**/*.png
 *.webp
 !docs/img/referans/skolyoz.webp
+!docs/img/uygulama/ekran-[123].jpg
 
 # --- Model weights and training output ------------------------------------
 # Weights are derived from third-party training data and from Ultralytics

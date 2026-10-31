@@ -1,8 +1,8 @@
 """Sample-output demo: the on-device chain, mirrored in Python, drawn on example images.
 
 Five examples use a *drawn* back figure whose armpit tilt is known by construction; no real
-person appears in them. The sixth (``kind="photo"``) is the single real photograph the README
-opens with, run through the same chain. The chain is a line-for-line mirror of
+person appears in them. The sixth (``kind="photo"``) is the one real reference photograph,
+docs/img/referans/skolyoz.webp, run through the same chain. The chain is a line-for-line mirror of
 android/.../cikarim/OlcumZinciri.kt (stretch to 640, Stage 1 decode, 128 px crops with
 black padding, soft-argmax with temperature 10, entropy / peak-distance gate, map back to the
 original resolution, angle at the original resolution), run on the real ``.tflite`` files.
@@ -249,6 +249,9 @@ def overlay(img, m: Measurement, lines: list[str], roll_deg: float = 0.0,
             footer: str = SYNTHETIC_FOOTER, band_below: bool = False):
     """Draw the guide the app shows: armpit line, gravity references, landmarks, reading.
 
+    The app's "Cobb tahmini" line is left out on purpose: it is an uncalibrated placeholder
+    (metrics/results.json, gap ``cobb_estimate``).
+
     With ``guides=False`` (a rejected measurement) only hollow points are drawn: the app would
     show nothing, the demo shows where the unreliable points landed. With ``band_below`` the
     text goes in a band under the frame (the verdict as its first row) instead of over it, so
@@ -342,10 +345,11 @@ EXAMPLES = [
             "pitch", pitch=11.0),
     Example("kisi-yok", "Karede kimse yok",
             "Boş zemin: Aşama 1 güveni eşiğin (0.25) altında kalır, ölçüm yapılmaz.", "blank"),
-    Example("referans", "Gerçek fotoğraf: README'deki referans görsel",
-            "README'nin başındaki referans fotoğraf, çizim yerine **gerçek bir sırt fotoğrafı**; "
-            "gönderilen modellerden olduğu gibi geçirildi. Sayılar bir başarım ölçüsü değildir; "
-            "nedenleri sayıların altında.", "photo", source="docs/img/referans/skolyoz.webp"),
+    Example("referans", "Gerçek fotoğraf: referans görsel",
+            "Projenin referans fotoğrafı (`docs/img/referans/skolyoz.webp`), çizim yerine "
+            "**gerçek bir sırt fotoğrafı**; gönderilen modellerden olduğu gibi geçirildi. Sayılar "
+            "bir başarım ölçüsü değildir; nedenleri sayıların altında.", "photo",
+            source="docs/img/referans/skolyoz.webp"),
 ]
 
 
@@ -461,8 +465,8 @@ def write_summary(root: Path, out_dir: Path, hashes: dict[str, str], threads: in
         "<!-- `python -m skolyoz_metrics demo` ile ÜRETİLİR (model dosyaları gerekir). "
         "Elle düzenlemeyin. -->\n",
         "İlk beş görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı "
-        "(omuz eğimi çizimde bilinir). Son bölüm, README'nin başındaki tek **gerçek "
-        "fotoğrafı** gösterir. İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin "
+        "(omuz eğimi çizimde bilinir). Son bölüm, tek bir **gerçek fotoğrafı** (projenin "
+        "referans görseli) gösterir. İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin "
         "Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki çıktısıdır.\n",
         "> [!IMPORTANT]\n> Bunlar **başarım kanıtı değil, boru hattının ne yaptığının "
         "gösterimidir.** Modeller gerçek fotoğraflarla eğitildi; çizilmiş bir figürde çalışması "
@@ -471,7 +475,9 @@ def write_summary(root: Path, out_dir: Path, hashes: dict[str, str], threads: in
         "fotoğraflarında kararsızlık ölçüldü, bkz. [METRICS.md](METRICS.md). Gerçek fotoğraf "
         "bölümü de kanıt değildir; nedenleri o bölümde.\n",
         "> [!NOTE]\n> IMU roll düzeltmesi bu örneklerde **gösterilmiyor** (roll = 0): düzeltmenin "
-        "işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`.\n",
+        "işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`. "
+        "Uygulama ekranındaki **Cobb tahmini satırı da çizilmiyor**: kalibre edilmemiş bir yer "
+        "tutucudur, bkz. METRICS.md → Bilinen boşluklar → `cobb_estimate`.\n",
         f"Modeller: `asama1.tflite` `{hashes['asama1.tflite'][:16]}…`, `asama2.tflite` "
         f"`{hashes['asama2.tflite'][:16]}…` · {threads} iş parçacığı · {date.today():%Y-%m-%d}.\n",
     ]

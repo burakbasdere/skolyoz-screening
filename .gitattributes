@@ -8,4 +8,5 @@ gradlew text eol=lf
 *.tflite binary
 *.png binary
 *.webp binary
+*.jpg binary
 *.pdf binary

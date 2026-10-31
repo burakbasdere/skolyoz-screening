@@ -15,15 +15,17 @@ phone's own IMU removes the error caused by holding the camera crooked.
 
 <table>
 <tr>
-<td align="center" valign="top"><img src="docs/img/referans/skolyoz.webp" width="250" alt="Back view of a spine with scoliosis: surface asymmetry at shoulder, scapula and waist level"><br><sub><b>Reference photograph</b><br>216×228 pixels</sub></td>
-<td align="center" valign="top"><img src="docs/img/ornekler/referans.png" width="250" alt="The same photograph with the seven landmarks the models found; axillary tilt +3.38 degrees, coronal offset +0.64 degrees"><br><sub><b>Output of the models</b><br>tilt +3.38°, gate passed</sub></td>
+<td align="center" valign="top"><img src="docs/img/uygulama/ekran-1.jpg" width="250" alt="App screen: right shoulder 7.2 degrees higher, coronal balance 2.5 degrees to the left, seven landmarks and the spine line"></td>
+<td align="center" valign="top"><img src="docs/img/uygulama/ekran-2.jpg" width="250" alt="App screen: left shoulder 7.3 degrees higher, coronal balance 4.0 degrees to the right"></td>
+<td align="center" valign="top"><img src="docs/img/uygulama/ekran-3.jpg" width="250" alt="App screen: right shoulder 7.4 degrees higher, coronal balance 2.8 degrees to the left"></td>
 </tr>
 </table>
 
-<sub>Left: the reference photograph. Right: what the models in this repository output on it. This is **one example, not evidence of
-accuracy**: its true value is unknown and the same frame was found among the project's training images
-([docs/ORNEKLER.md](docs/ORNEKLER.md), Turkish). What the app measures is this kind of visible surface asymmetry, not the
-radiographic Cobb angle. Image source and permission: [docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md) §1 (Turkish).</sub>
+<sub>The app running on a real phone (Android, fully on-device). The camera is pointed at back photographs shown on a monitor; there is
+no live person in front of it. **The "Cobb tahmini" (Cobb estimate) line on the screen is an uncalibrated placeholder and must not be
+read as a measurement** (there is no radiograph-matched data): [docs/METRICS.md](docs/METRICS.md#8-bilinen-boşluklar), gap `cobb_estimate`
+(Turkish). The millisecond figure at the bottom is the app's own timer for that one shot, not a controlled latency measurement. Source
+and permission of the photographs on the screens: [docs/DATA_AND_LICENSING.md](docs/DATA_AND_LICENSING.md) §1 (Turkish).</sub>
 
 
 > [!WARNING]

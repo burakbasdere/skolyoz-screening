@@ -12,15 +12,21 @@ Tek istisna dokümantasyon şekilleridir: `docs/` altındaki PNG'lere izin veril
 oraya eklediğiniz her görselin **gerçek bir kişi içermediğini kontrol edin**. (Bu depodaki
 `docs/img/` grafikleri JSON'dan üretilen SVG'lerdir; görüntü içermez.)
 
-**Tek istisna: referans görsel.** `docs/img/referans/skolyoz.webp` (README'nin başında), arkadan
-çekilmiş gerçek bir sırt fotoğrafıdır; yüz görünmez. `.gitignore` bu tek dosyayı ayrıca
-açıkça serbest bırakır (`*.webp` aksi halde dışarıda tutulur). Modellerin bu fotoğraf üzerindeki
-çıktısı `docs/img/ornekler/referans.png` (ve `docs/ORNEKLER.md`'deki son bölüm) da aynı kişiyi
-içerir; aynı koşullara tabidir. **Kaynağı, lisansı ve çekilen kişinin (ya da velisinin)
-yayımlama rızası projede kayıtlı değil.** Depo herkese açık olduğundan bunlardan birini
-belgeleyin (kaynak + lisans, ya da yazılı rıza); belgelenemiyorsa fotoğrafı ve `referans.png`'yi
-silin, README'lerin başındaki referans tablosunu kaldırın ya da sentetik bir görselle değiştirin,
-`skolyoz_metrics/demo.py` içindeki `referans` örneğini silip `demo`yu yeniden çalıştırın.
+**İstisnalar: iki küçük gerçek fotoğraf kümesi.** `.gitignore` bunları tek tek dosya adıyla
+serbest bırakır. İkisi de gerçek kişilerin sırt fotoğraflarını içerir; yüz görünmez. **Kaynakları,
+lisansları ve çekilen kişilerin (ya da velilerinin) yayımlama rızası projede kayıtlı değil.**
+
+- `docs/img/uygulama/ekran-1.jpg`, `ekran-2.jpg`, `ekran-3.jpg` (README'lerin başında):
+  uygulamanın gerçek bir telefonda çalışırken fotoğrafları. Kamera, bir monitörde gösterilen
+  sırt fotoğraflarına tutulmuş. Ekranlardaki "Cobb tahmini" satırı kalibre edilmemiş bir yer
+  tutucudur (`cobb_estimate` boşluğu).
+- `docs/img/referans/skolyoz.webp`: arkadan çekilmiş tek bir referans fotoğrafı. Yalnızca
+  `docs/ORNEKLER.md`'nin son bölümünde ve modellerin onun üzerine çizdiği çıktıda
+  (`docs/img/ornekler/referans.png`) kullanılır. (`*.webp` aksi halde dışarıda tutulur.)
+
+Depo herkese açık olduğundan her biri için kaynak + lisans ya da yazılı rıza belgeleyin.
+Belgelenemeyeni silin ve onu gösteren yerleri kaldırın: README'lerin başındaki tablo ya da
+`skolyoz_metrics/demo.py` içindeki `referans` örneği (ardından `demo`nun yeniden çalıştırılması).
 Dosya bir kez geçmişe girdikten sonra silmek yeterli değildir (sonraki paragraf).
 
 Bir hasta görüntüsü commit edilirse bunu sızıntı sayın: sonraki bir commit'te silmek geçmişten

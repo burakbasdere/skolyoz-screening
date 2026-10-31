@@ -2,13 +2,13 @@
 
 <!-- `python -m skolyoz_metrics demo` ile ÜRETİLİR (model dosyaları gerekir). Elle düzenlemeyin. -->
 
-İlk beş görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı (omuz eğimi çizimde bilinir). Son bölüm, README'nin başındaki tek **gerçek fotoğrafı** gösterir. İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki çıktısıdır.
+İlk beş görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı (omuz eğimi çizimde bilinir). Son bölüm, tek bir **gerçek fotoğrafı** (projenin referans görseli) gösterir. İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki çıktısıdır.
 
 > [!IMPORTANT]
 > Bunlar **başarım kanıtı değil, boru hattının ne yaptığının gösterimidir.** Modeller gerçek fotoğraflarla eğitildi; çizilmiş bir figürde çalışması gerçek fotoğraflarda doğru çalışacağı anlamına gelmez (örneğin 5° çizilen eğim 3.3° bulundu: bu figürde nokta hatası etiket gürültü tabanının çok üzerinde). Gerçek telefon fotoğraflarında kararsızlık ölçüldü, bkz. [METRICS.md](METRICS.md). Gerçek fotoğraf bölümü de kanıt değildir; nedenleri o bölümde.
 
 > [!NOTE]
-> IMU roll düzeltmesi bu örneklerde **gösterilmiyor** (roll = 0): düzeltmenin işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`.
+> IMU roll düzeltmesi bu örneklerde **gösterilmiyor** (roll = 0): düzeltmenin işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`. Uygulama ekranındaki **Cobb tahmini satırı da çizilmiyor**: kalibre edilmemiş bir yer tutucudur, bkz. METRICS.md → Bilinen boşluklar → `cobb_estimate`.
 
 Modeller: `asama1.tflite` `9737b9d5792b7e6f…`, `asama2.tflite` `8f59347e45fe4354…` · 4 iş parçacığı · 2026-10-31.
 
@@ -82,11 +82,11 @@ Boş zemin: Aşama 1 güveni eşiğin (0.25) altında kalır, ölçüm yapılmaz
 
 Aşama 1 en yüksek güven: 0.001 (eşik 0.25). Ölçüm yapılmadı.
 
-## Gerçek fotoğraf: README'deki referans görsel
+## Gerçek fotoğraf: referans görsel
 
-![Gerçek fotoğraf: README'deki referans görsel](img/ornekler/referans.png)
+![Gerçek fotoğraf: referans görsel](img/ornekler/referans.png)
 
-README'nin başındaki referans fotoğraf, çizim yerine **gerçek bir sırt fotoğrafı**; gönderilen modellerden olduğu gibi geçirildi. Sayılar bir başarım ölçüsü değildir; nedenleri sayıların altında.
+Projenin referans fotoğrafı (`docs/img/referans/skolyoz.webp`), çizim yerine **gerçek bir sırt fotoğrafı**; gönderilen modellerden olduğu gibi geçirildi. Sayılar bir başarım ölçüsü değildir; nedenleri sayıların altında.
 
 Aksiller eğim: **+3.38°** · koronal sapma: +2.0 px (+0.64°) · güven kapısı: geçti · Aşama 1 güveni 0.969
 
