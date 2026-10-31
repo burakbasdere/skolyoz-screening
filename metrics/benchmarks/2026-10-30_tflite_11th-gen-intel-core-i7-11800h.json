@@ -7,8 +7,6 @@
     "machine": "AMD64",
     "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
     "logical_cores": 16,
-    "python": "3.11.9",
-    "commit": null,
     "tflite_runtime": "ai_edge_litert 2.3.0"
   },
   "config": {
@@ -101,7 +99,7 @@
   ],
   "notes": [
     "Sentetik rastgele girdi; yalnızca Interpreter.invoke() ve set_tensor (görüntü çözme, yeniden boyutlandırma ve son işleme yok).",
-    "pipeline = 1 x stage1 + 7 x stage2; OlcumZinciri.kt'yi yansıtacak şekilde sırayla çalıştırılır.",
-    "Masaüstü/CI CPU'sunda Python TFLite çalışma zamanıyla ölçüldü; Android gecikmesi değildir."
+    "pipeline = 1 x stage1 + 7 x stage2; uygulamadaki zinciri yansıtacak şekilde sırayla çalıştırılır.",
+    "Masaüstü CPU'sunda TFLite çalışma zamanıyla ölçüldü; Android gecikmesi değildir."
   ]
 }

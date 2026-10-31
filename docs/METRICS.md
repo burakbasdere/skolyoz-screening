@@ -1,8 +1,6 @@
 # Metrikler
 
-<!-- `python -m skolyoz_metrics render` ile metrics/results.json ve metrics/benchmarks/*.json dosyalarından ÜRETİLİR. Elle düzenlemeyin. -->
-
-_Son güncelleme 2026-10-31._ Her sayının bir durumu vardır. 'reported' (raporlanan) = projenin kendi yazılarından alınmış, burada yeniden çalıştırılmamış (özel veri gerektirir). 'measured' (ölçülen) = bu depodaki bir komutla üretilmiş. 'not_measured' / 'unvalidated' = bilinen boşluklar; bilerek listelenir.
+_Son güncelleme 2026-10-31._ Her sayının bir durumu vardır. 'reported' (raporlanan) = projenin kendi yazılarından alınmış, burada yeniden çalıştırılmamış (özel veri gerektirir). 'measured' (ölçülen) = proje içinde ölçülmüş. 'not_measured' / 'unvalidated' = bilinen boşluklar; bilerek listelenir.
 
 **Herhangi bir sayıyı alıntılamadan önce okuyun:** doğruluk rakamları web kaynaklı görüntüler üzerindeki çevrimdışı deneyleri anlatır. Klinik doğrulama değildir ve cihaz üstü sonuç değildir. Bu bir tarama yardımcısıdır, tanı aracı değildir.
 
@@ -12,13 +10,13 @@ _Son güncelleme 2026-10-31._ Her sayının bir durumu vardır. 'reported' (rapo
 
 Doğruluk tabloları iki protokolden gelir. Bunlar birbirinin yerine kullanılamaz: her tablonun altındaki protokol satırına bakın.
 
-**`cv5_stage2` — Aşama 2 için 5 katlı çapraz doğrulama (katman dışı tahmin)** (337 görüntü, 1,582 landmark; model: 7 landmark'lı Aşama 2 (MobileNetV3-small + ısı haritası + soft-argmax), PyTorch). Görüntüler benzerliğe göre (eşik 0.85) gruplanır; böylece birbirine çok benzeyen kareler farklı katlara dağılmaz. Her kat kalan dördüyle eğitilir ve modelin hiç görmediği görüntüler üzerinde ölçülür; en iyi epoch seçimi ölçülen parçayla değil, katın kendi doğrulama parçasıyla yapılır. Aşama 2 kırpımları etiketin etrafından, x ve y yönünde en fazla 35 piksellik düzgün dağılımlı rastgele kaydırmayla alınır (Aşama 1'in lokalizasyon hatasının benzetimi). Kaynak: docs/tr/TEKNIK_DOKUMAN.md bölüm 5.5, 6.1, 6.2; scripts/40_rafinaj7_egit.py (JITTER = 35).
+**`cv5_stage2` — Aşama 2 için 5 katlı çapraz doğrulama (katman dışı tahmin)** (337 görüntü, 1,582 landmark; model: 7 landmark'lı Aşama 2 (MobileNetV3-small + ısı haritası + soft-argmax), PyTorch). Görüntüler benzerliğe göre (eşik 0.85) gruplanır; böylece birbirine çok benzeyen kareler farklı katlara dağılmaz. Her kat kalan dördüyle eğitilir ve modelin hiç görmediği görüntüler üzerinde ölçülür; en iyi epoch seçimi ölçülen parçayla değil, katın kendi doğrulama parçasıyla yapılır. Aşama 2 kırpımları etiketin etrafından, x ve y yönünde en fazla 35 piksellik düzgün dağılımlı rastgele kaydırmayla alınır (Aşama 1'in lokalizasyon hatasının benzetimi). Kaynak: iç teknik rapor (yayımlanmamıştır), bölüm 5.5, 6.1, 6.2.
 
-**`holdout50` — Tek seferlik ayrılmış test kümesi** (50 görüntü; model: İki aşamalı boru hattı, PyTorch (2 landmark'lı önceki nesil; kaynak, karar tablosunun hangi model nesliyle üretildiğini ayrıca belirtmiyor)). Temizlenmiş 337 görüntü, benzerlik gruplarına göre 236 / 51 / 50 (eğitim / doğrulama / test) olarak bölünür. Test kümesi raporlama için yalnızca bir kez kullanılır. Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2 ve Faz 1.
+**`holdout50` — Tek seferlik ayrılmış test kümesi** (50 görüntü; model: İki aşamalı boru hattı, PyTorch (2 landmark'lı önceki nesil; kaynak, karar tablosunun hangi model nesliyle üretildiğini ayrıca belirtmiyor)). Temizlenmiş 337 görüntü, benzerlik gruplarına göre 236 / 51 / 50 (eğitim / doğrulama / test) olarak bölünür. Test kümesi raporlama için yalnızca bir kez kullanılır. Kaynak: iç mobil çalışma notları (yayımlanmamıştır) bölüm 2 ve Faz 1.
 
 ### 1.1 Landmark lokalizasyonu
 
-Protokol `cv5_stage2` (337 görüntü) · Durum: `reported` (raporlanan) · Kaynak: docs/tr/TEKNIK_DOKUMAN.md bölüm 6.1 · Yeniden üretmek için: `python scripts/45_rafinaj7_cv.py --kat 5`; `python scripts/46_cv_omurga_analiz.py`. Özel veri gerektirir.
+Protokol `cv5_stage2` (337 görüntü) · Durum: `reported` (raporlanan) · Kaynak: iç teknik rapor (yayımlanmamıştır) bölüm 6.1 · Özel veri gerektirir; burada yeniden çalıştırılmadı.
 
 | Landmark | n | Medyan (px) | p90 (px) | Etiket gürültü tabanı (px) |
 |---|---|---|---|---|
@@ -33,7 +31,7 @@ Protokol `cv5_stage2` (337 görüntü) · Durum: `reported` (raporlanan) · Kayn
 
 ### 1.2 Açı ölçümü
 
-Protokol `cv5_stage2` (337 görüntü) · Durum: `reported` (raporlanan) · Kaynak: docs/tr/TEKNIK_DOKUMAN.md bölüm 6.2 · Yeniden üretmek için: `python scripts/45_rafinaj7_cv.py --kat 5`; `python scripts/46_cv_omurga_analiz.py`. Özel veri gerektirir.
+Protokol `cv5_stage2` (337 görüntü) · Durum: `reported` (raporlanan) · Kaynak: iç teknik rapor (yayımlanmamıştır) bölüm 6.2 · Özel veri gerektirir; burada yeniden çalıştırılmadı.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/angle-dark.svg">
@@ -53,7 +51,7 @@ Bağımsız etiketlerin ortalaması alınınca taban 0.232 °'ye iner.
 
 ### 1.3 Tarama kararı
 
-Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2 (test, n = 50) · Yeniden üretmek için: `python scripts/20_tam_degerlendirme.py`; `python scripts/26_tflite_degerlendirme.py`. Özel veri gerektirir.
+Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak: iç mobil çalışma notları (yayımlanmamıştır) bölüm 2 (test, n = 50) · Özel veri gerektirir; burada yeniden çalıştırılmadı.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/decision-dark.svg">
@@ -66,13 +64,13 @@ Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak
 | 5° | 6 | 5/6 = 0.833 (0.436–0.970) | 46/50 = 0.920 (0.812–0.968) | 0.834 |
 | 7° | 4 | 4/4 = 1.000 (0.510–1.000) | 50/50 = 1.000 (0.929–1.000) | 1.000 |
 
-- Kaynak düzeltmesi: önceki README bu tabloyu 5 katlı çapraz doğrulamaya atfediyordu. Aynı sayılar MOBIL_YAPILACAKLAR.md içinde n = 50'lik test kümesi altında geçiyor ve '16 pozitif vakanın 15'i' 337 görüntülük bir değerlendirmeden çıkamaz; bu yüzden burada ayrılmış n = 50 sonucu olarak sınıflandırıldı. Doğrulamak için scripts/20 yeniden çalıştırılmalı.
+- Kaynak düzeltmesi: önceki README bu tabloyu 5 katlı çapraz doğrulamaya atfediyordu. Aynı sayılar iç mobil notlarında n = 50'lik test kümesi altında geçiyor ve '16 pozitif vakanın 15'i' 337 görüntülük bir değerlendirmeden çıkamaz; bu yüzden burada ayrılmış n = 50 sonucu olarak sınıflandırıldı. Doğrulamak için değerlendirme yeniden çalıştırılmalı.
 - Wilson %95 aralıkları, sayımlardan gösterim anında hesaplanır. 4 ile 16 pozitif vakayla aralıklar geniştir: 7 derece satırı (4/4) hiçbir iddiayı desteklemez.
 - Eşikler aksiller eğime uygulanır; bu bir yüzey asimetrisi göstergesidir, Cobb açısı değildir.
 
 ### 1.4 Aşama 2'nin katkısı
 
-Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2 · Yeniden üretmek için: `python scripts/20_tam_degerlendirme.py`; `python scripts/26_tflite_degerlendirme.py`. Özel veri gerektirir.
+Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak: iç mobil çalışma notları (yayımlanmamıştır) bölüm 2 · Özel veri gerektirir; burada yeniden çalıştırılmadı.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/ablation-dark.svg">
@@ -95,7 +93,7 @@ Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak
 
 ### 2.1 Dışa aktarma varyantları ve kuantizasyon maliyeti
 
-Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md Faz 1 · Yeniden üretmek için: `python scripts/20_tam_degerlendirme.py`; `python scripts/26_tflite_degerlendirme.py`. Özel veri gerektirir.
+Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak: iç mobil çalışma notları (yayımlanmamıştır) Faz 1 · Özel veri gerektirir; burada yeniden çalıştırılmadı.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/variants-dark.svg">
@@ -111,7 +109,7 @@ Protokol `holdout50` (50 görüntü) · Durum: `reported` (raporlanan) · Kaynak
 | int8_int16_activations | 3.79 | 35.10 | 1.644 | 0.420 |  |
 | pytorch_reference | — | 3.55 | 0.380 | 0.860 | float16'nın PyTorch'a göre maliyeti yaklaşık 0.04 derece. |
 
-- 2 landmark'lı önceki modellerde ölçüldü. v0.1.0 ile gelen 7 landmark'lı modeller scripts/52 ile dönüştürüldü ama kuantizasyon maliyetleri değerlendirilmedi (bkz. boşluklar).
+- 2 landmark'lı önceki modellerde ölçüldü. v0.1.0 ile gelen 7 landmark'lı modeller dönüştürüldü ama kuantizasyon maliyetleri değerlendirilmedi (bkz. boşluklar).
 
 ### 2.2 Gönderilen çıktılar
 
@@ -126,7 +124,7 @@ Durum: `measured` (ölçülen) · Kaynak: Orijinal deponun v0.1.0 ('v7' derlemes
 
 ### 2.3 Model karmaşıklığı
 
-Durum: `measured` (ölçülen) · Kaynak: python -m skolyoz_metrics bench arch (sayılar ağırlıklardan bağımsızdır); tests/test_bench_arch.py ile çapraz denetlenir
+Durum: `measured` (ölçülen) · Kaynak: mimari ölçümü (sayılar ağırlıklardan bağımsızdır)
 
 | Model | Parametre | GFLOPs | Girdi | Not |
 |---|---|---|---|---|
@@ -135,9 +133,9 @@ Durum: `measured` (ölçülen) · Kaynak: python -m skolyoz_metrics bench arch (
 
 ## 3. Gecikme
 
-### 3.1 Bu depodan çalıştırılan benchmark'lar
+### 3.1 Masaüstü benchmark'ları
 
-Durum: `measured` (ölçülen). Yeniden üretmek için: `python -m skolyoz_metrics bench arch|tflite` (bkz. [BENCHMARKING.md](BENCHMARKING.md)). Her türün yalnızca en yeni koşusu gösterilir; eskiler `metrics/benchmarks/` içinde geçmiş olarak kalır.
+Durum: `measured` (ölçülen). Her türün yalnızca en yeni koşusu gösterilir; ham veri `metrics/benchmarks/` içindedir.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/latency-dark.svg">
@@ -155,8 +153,8 @@ Durum: `measured` (ölçülen). Yeniden üretmek için: `python -m skolyoz_metri
 | pipeline | cpu-4t | — | — | 70.75 | 75.73 | 92.55 |
 
 - Sentetik rastgele girdi; yalnızca Interpreter.invoke() ve set_tensor (görüntü çözme, yeniden boyutlandırma ve son işleme yok).
-- pipeline = 1 x stage1 + 7 x stage2; OlcumZinciri.kt'yi yansıtacak şekilde sırayla çalıştırılır.
-- Masaüstü/CI CPU'sunda Python TFLite çalışma zamanıyla ölçüldü; Android gecikmesi değildir.
+- pipeline = 1 x stage1 + 7 x stage2; uygulamadaki zinciri yansıtacak şekilde sırayla çalıştırılır.
+- Masaüstü CPU'sunda TFLite çalışma zamanıyla ölçüldü; Android gecikmesi değildir.
 
 **PyTorch mimarileri (rastgele ağırlık)**
 
@@ -172,12 +170,12 @@ Durum: `measured` (ölçülen). Yeniden üretmek için: `python -m skolyoz_metri
 | pipeline | cuda | 3,093,592 | 8.303 | 66.64 | 79.09 | 85.19 |
 
 - Rastgele ağırlık, sentetik girdi; yalnızca eager PyTorch ileri geçişi (ön/son işleme ve NMS yok).
-- pipeline = 1 x stage1 + 7 x stage2; OlcumZinciri.kt'yi yansıtacak şekilde batch boyutu 1 ile sırayla çalıştırılır.
+- pipeline = 1 x stage1 + 7 x stage2; uygulamadaki zinciri yansıtacak şekilde batch boyutu 1 ile sırayla çalıştırılır.
 - params her öğrenilebilir parametreyi sayar; gflops = 2 x çarpma-toplama sayısı.
 
 ### 3.2 Fiziksel cihazdan raporlananlar
 
-Redmi Note 9 Pro, Android 12 (API 31) · Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md Faz 2
+Redmi Note 9 Pro, Android 12 (API 31) · Durum: `reported` (raporlanan) · Kaynak: iç mobil çalışma notları (yayımlanmamıştır) Faz 2
 
 | Deklanşör gecikmesi değişikliği | Toplam (ms) |
 |---|---|
@@ -191,9 +189,9 @@ IMU örnekleme periyodu 19.1 ms; 30 °/s dönüşte dönmeden doğan hata, en ya
 - Enterpolasyonlu değer ('< 0.01') cihazda değil, birim testte ölçülen bir üst sınırdır.
 - Çekim çözünürlüğünün 12 MP'den ~3 MP'ye düşürülmesinin JPEG kodlamayı kısaltması bekleniyordu; bu doğrulanmadı.
 
-### 3.3 Masaüstü JVM'de Kotlin ön işleme
+### 3.3 Masaüstünde ön işleme süresi
 
-Durum: `measured` (ölçülen) · Kaynak: ./gradlew :app:testDebugUnitTest --tests '*PerformansTest*', 2026-10-31 (masaüstü JVM, Android Studio JBR 17, 11th Gen Intel Core i7-11800H); PerformansTest.kt
+Durum: `measured` (ölçülen) · Kaynak: masaüstü ölçümü, 2026-10-31 (11th Gen Intel Core i7-11800H)
 
 | Adım | Ortalama (ms) |
 |---|---|
@@ -203,30 +201,13 @@ Durum: `measured` (ölçülen) · Kaynak: ./gradlew :app:testDebugUnitTest --tes
 | iki soft-argmax okuması | 0.3 |
 | toplam, TFLite hariç | 108.6 |
 
-- Masaüstünde JIT derlemeli bir JVM'de 5 tekrarın ortalaması, ısınma dahil; Android çalışma zamanı (ART) süreleri değildir.
+- Masaüstünde JIT derlemeli bir çalışma zamanında 5 tekrarın ortalaması, ısınma dahil; Android çalışma zamanı (ART) süreleri değildir.
 - Uygulama burada benzetilen 12 MP yerine yaklaşık 3 MP ile çeker; bu küçültme maliyetini azaltır ama etkisi ölçülmedi.
 - 3.1'deki yalnızca model süresiyle karşılaştırın: ön işleme, çıkarımın yanında ihmal edilebilir değildir.
 
-## 4. Port doğruluğu (Kotlin ↔ Python)
+## 4. Dayanıklılık
 
-Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md Faz 3; android/app/src/test; tests/test_golden_parity.py
-
-| Madde | Değer |
-|---|---|
-| JVM birim testleri | 42 |
-| Cihaz (instrumented) testleri | 4 |
-| Altın veri satırları (olcum / cikarim / kucultme) | 18 / 38 / 6 |
-| Kabul toleransı | 0.05 ° |
-| Raporlanan en büyük fark | 0.000 px / 0.0000 ° |
-
-- Altın veri CSV'lerindeki beklenen değerler elle yazılmaz, Python referansı çalıştırılarak üretilir (scripts/23_altin_veri.py); böylece iki gerçekleme fark edilmeden aynı yanlış işaret konvansiyonunu paylaşamaz.
-- 0.000 px / 0.0000 derece değeri, gerçek bir telefon fotoğrafında ve birebir aynı 640 × 640 girdi tensörüyle elde edildi; yani Kotlin ve Python ölçüm ile ön işleme kodunu karşılaştırır, model çıkarımını değil.
-- 4 cihaz (instrumented) testi fiziksel bir cihaz gerektirir ve CI'da çalıştırılmaz.
-- 42 JVM testinin hepsi 2026-10-31'de Gradle 8.10.2 ve JDK 17 ile çalıştırıldı: 42 geçti, 0 kaldı, 0 atlandı. Bu 42, PerformansTest'i (çok gevşek sınırlı bir zamanlama testi) ve kalibre edilmemiş Cobb yer tutucusunun bir testini de içerir (bkz. boşluklar).
-
-## 5. Dayanıklılık
-
-Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md Faz 3.5
+Durum: `reported` (raporlanan) · Kaynak: iç mobil çalışma notları (yayımlanmamıştır) Faz 3.5
 
 | Madde | Değer | Bağlam |
 |---|---|---|
@@ -240,9 +221,9 @@ Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md Faz 3.5
 - Kapı modeli iyileştirmez; sessizce yanlış olan cevabı görünür bir reddedişe çevirir. Kök neden, web kaynaklı eğitim görüntüleri ile telefon fotoğrafları arasındaki alan kaymasıdır.
 - Kapı henüz gerçek bir çekim kampanyasında denenmedi.
 
-## 6. Veri kümesi
+## 5. Veri kümesi
 
-Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2; docs/tr/TEKNIK_DOKUMAN.md bölüm 5.1
+Durum: `reported` (raporlanan) · Kaynak: iç mobil çalışma notları (yayımlanmamıştır) bölüm 2; iç teknik rapor (yayımlanmamıştır) bölüm 5.1
 
 | Madde | Değer |
 |---|---|
@@ -257,9 +238,9 @@ Durum: `reported` (raporlanan) · Kaynak: docs/tr/MOBIL_YAPILACAKLAR.md bölüm 
 
 - Kaynak: bir Roboflow dışa aktarımı (bkz. docs/DATA_AND_LICENSING.md). Görüntüler web kaynaklıdır ve en-boy oranı korunmadan 640 x 640'a boyutlandırılmıştır; orijinallere erişilemiyor.
 
-## 7. Olumsuz sonuçlar
+## 6. Olumsuz sonuçlar
 
-Durum: `reported` (raporlanan) · Kaynak: docs/tr/TEKNIK_DOKUMAN.md bölüm 6.3 ve 6.4
+Durum: `reported` (raporlanan) · Kaynak: iç teknik rapor (yayımlanmamıştır) bölüm 6.3 ve 6.4
 
 | Yaklaşım | Sonuç | Gerekçe |
 |---|---|---|
@@ -270,15 +251,15 @@ Durum: `reported` (raporlanan) · Kaynak: docs/tr/TEKNIK_DOKUMAN.md bölüm 6.3 
 | Omurga eğrilik profili (hedef H5) | Yanal hata 5.88 px, etiket tabanı 5.58 px, sinyal 6.50 px; konveksite doğruluğu %63.9, hep çoğunluk sınıfını tahmin etmenin doğruluğu %52.8. | Sınır model değil, etiket kalitesidir. |
 | Tek aşamalı doğrudan koordinat regresyonu | Eğitim, doğrulama ve test kümelerinde aynı, yaklaşık 24 px hata. | Veri miktarı değil, temsil biçimi. |
 
-## 8. Bilinen boşluklar
+## 7. Bilinen boşluklar
 
 Bu projenin **ölçmediği** ya da doğrulamadığı şeyler. Bilerek listelenir; bunlar olmadan bir metrik sayfası bilinenin kapsamını abartırdı.
 
 | Kimlik | Durum | Ne | Neden açık | Sonraki adım |
 |---|---|---|---|---|
-| `on_device_inference_latency` | not_measured | Aşama 1 + 7 x Aşama 2'nin telefondaki gecikmesi; RAM, enerji ve ısınma davranışı. | Cihazda yalnızca deklanşör gecikmesi ölçüldü. scripts/31 ~100-200 ms hedefi yazdırır, ama bu hedef boru hattı 7 değil 2 noktayı rafine ederken yazılmıştı. | docs/BENCHMARKING.md'deki protokolü en az bir düşük ve bir orta segment telefonda çalıştırın. |
+| `on_device_inference_latency` | not_measured | Aşama 1 + 7 x Aşama 2'nin telefondaki gecikmesi; RAM, enerji ve ısınma davranışı. | Cihazda yalnızca deklanşör gecikmesi ölçüldü. Eski ~100-200 ms hedefi, boru hattı 7 değil 2 noktayı rafine ederken konmuştu. Uygulamanın kendi sayacının tek çekimlik değerleri (865, 880 ve 1188 ms) kontrolsüz gözlemlerdir: ısınma, tekrar ve dağılım yok. | Protokollü bir ölçüm yapın: en az bir düşük ve bir orta segment telefonda, ısınma ve tekrarlarla. |
 | `end_to_end_accuracy` | not_measured | 7 landmark için gerçek Aşama 1 çıktılarıyla tam zincirin doğruluğu. | Çapraz doğrulama, Aşama 2'yi gerçek Aşama 1 tahminleriyle değil, benzetilen (±35 px) kaydırmalarla besliyor. | Aşama 1'i de katman dışı (out-of-fold) eğitin, sonra zinciri o görüntülerde değerlendirin. |
-| `tflite_accuracy_7_landmarks` | not_measured | 7 landmark'lı TFLite modellerinin kuantizasyon maliyeti. | Yalnızca 2 landmark'lı modeller için ölçüldü (yaklaşık +0.04 derece). | scripts/26'yı 7 landmark'lı boru hattına genişletin. |
+| `tflite_accuracy_7_landmarks` | not_measured | 7 landmark'lı TFLite modellerinin kuantizasyon maliyeti. | Yalnızca 2 landmark'lı modeller için ölçüldü (yaklaşık +0.04 derece). | Değerlendirmeyi 7 landmark'lı boru hattına genişletin. |
 | `phone_photo_accuracy` | not_measured | Hedeflenen protokolle telefonla çekilmiş fotoğraflardaki doğruluk. | Eğitim ve değerlendirme görüntüleri web kaynaklı; telefon verisi bir avuç gayriresmî çekimden ibaret. | Protokole uygun 200-300 telefon fotoğrafı toplayın ve ikinci bir bağımsız etiketleme turu yapın. |
-| `cobb_estimate` | unvalidated | Android arayüzünde gösterilen Cobb açısı tahmini ve risk kategorisi (Kalibrasyon.cobbTahmini, scripts/48_cobb_kalibrasyon.py). | Katsayıları (1.25 / 1.10 / 2.40) ve '±3.5 derece' hata payı, radyografi eşleşmeli hiçbir veriye uydurulmadı (bu projede böyle veri yok) ve projenin 'arayüzde Cobb açısı yazılmaz' kuralıyla çelişiyor. Ölçüm değil, yer tutucu olarak değerlendirin. | Radyografi eşleşmeli veriyle kalibre edilene kadar arayüzden kaldırın ya da bir debug bayrağının arkasına alın. |
-| `imu_roll_sign` | not_measured | IMU roll düzeltmesinin işareti (ölçülen açıdan roll'un çıkarılması) cihazda doğrulanmadı. | Uygulama yerçekimi yatayını (cos r, sin r) yönünde, yani roll > 0 iken sağa doğru alçalan bir çizgi olarak çiziyor (KilavuzCizer.kt, scripts/19), ama sayıyı 'ham − roll' olarak hesaplıyor. Roll > 0 iken seviyeli iki nokta için sayı −roll veriyor (sol omuz yüksek), çizimde ise sağ uç yüksek görünüyor: sayı ve çizim birbirini tutmuyor. Android TYPE_GRAVITY işareti ve arka kamera görüntüsü varsayımıyla yapılan bir muhakeme çizimi destekliyor, formülü değil; bu doğruysa düzeltme hatayı sıfırlamak yerine ikiye katlar. Altın veri testleri yalnızca Kotlin ile Python'un aynı formülü uyguladığını doğrular, işaretin fiziksel doğruluğunu değil; belgelerde işaretin cihazda doğrulandığına dair kayıt yok. Bu bir şüphedir, kanıtlanmış bir hata değil. | Telefonu bilinen bir açıyla (ör. 10°) eğik tutup düz bir yatay kenarı (duvar, masa kenarı) çekin: düzeltilmiş açı ≈ 0 ise formül doğrudur, ≈ ±20° ise işaret ters. Ters çıkarsa scripts/19, Olcum.kt, KilavuzCizer.kt ve altın veriyi birlikte düzeltin. |
+| `cobb_estimate` | unvalidated | Android uygulamasının yaptığı ve 'Cobb tahmini ~X° (±3.5°)' olarak gösterdiği Cobb açısı ölçümü ile risk kategorisi. Özellik test aşamasındadır; son kullanıcı ürünü değildir. | Ölçüm yapılır ve gösterilir, ancak katsayıları (1.25 / 1.10 / 2.40) ve '±3.5 derece' hata payı radyografi eşleşmeli hiçbir veriye uydurulmadı (bu projede böyle veri yok); doğruluğu bilinmiyor. Çıktı bu nedenle klinik karar için kullanılamaz. | Radyografi eşleşmeli veriyle kalibre edin ve hatasını raporlayın; o zamana kadar 'test aşaması' etiketi kalsın. |
+| `imu_roll_sign` | not_measured | IMU roll düzeltmesinin işareti (ölçülen açıdan roll'un çıkarılması) cihazda doğrulanmadı. | Uygulama yerçekimi yatayını (cos r, sin r) yönünde, yani roll > 0 iken sağa doğru alçalan bir çizgi olarak çiziyor, ama sayıyı 'ham − roll' olarak hesaplıyor. Roll > 0 iken seviyeli iki nokta için sayı −roll veriyor (sol omuz yüksek), çizimde ise sağ uç yüksek görünüyor: sayı ve çizim birbirini tutmuyor. Android'in yerçekimi sensörünün işareti ve arka kamera görüntüsü varsayımıyla yapılan bir muhakeme çizimi destekliyor, formülü değil; bu doğruysa düzeltme hatayı sıfırlamak yerine ikiye katlar. Uygulamanın iki gerçeklemesinin aynı formülü uygulaması işaretin fiziksel doğruluğunu göstermez; işaretin cihazda doğrulandığına dair kayıt yok. Bu bir şüphedir, kanıtlanmış bir hata değil. | Telefonu bilinen bir açıyla (ör. 10°) eğik tutup düz bir yatay kenarı (duvar, masa kenarı) çekin: düzeltilmiş açı ≈ 0 ise formül doğrudur, ≈ ±20° ise işaret ters. Ters çıkarsa formül ve çizim birlikte düzeltilmelidir. |

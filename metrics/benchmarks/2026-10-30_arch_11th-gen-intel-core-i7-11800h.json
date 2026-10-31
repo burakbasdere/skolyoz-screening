@@ -7,8 +7,6 @@
     "machine": "AMD64",
     "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
     "logical_cores": 16,
-    "python": "3.11.9",
-    "commit": null,
     "torch": "2.5.1+cu121",
     "cuda_device": "NVIDIA GeForce RTX 3050 Laptop GPU"
   },
@@ -150,7 +148,7 @@
   ],
   "notes": [
     "Rastgele ağırlık, sentetik girdi; yalnızca eager PyTorch ileri geçişi (ön/son işleme ve NMS yok).",
-    "pipeline = 1 x stage1 + 7 x stage2; OlcumZinciri.kt'yi yansıtacak şekilde batch boyutu 1 ile sırayla çalıştırılır.",
+    "pipeline = 1 x stage1 + 7 x stage2; uygulamadaki zinciri yansıtacak şekilde batch boyutu 1 ile sırayla çalıştırılır.",
     "params her öğrenilebilir parametreyi sayar; gflops = 2 x çarpma-toplama sayısı."
   ]
 }

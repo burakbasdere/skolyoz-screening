@@ -1,14 +1,12 @@
 # Örnek çıktılar
 
-<!-- `python -m skolyoz_metrics demo` ile ÜRETİLİR (model dosyaları gerekir). Elle düzenlemeyin. -->
-
-İlk beş görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı (omuz eğimi çizimde bilinir). Son bölüm, tek bir **gerçek fotoğrafı** (projenin referans görseli) gösterir. İşaretler, uygulamayla aynı zincirin (`OlcumZinciri.kt`'nin Python aynası) gönderilen gerçek `.tflite` modelleri üzerindeki çıktısıdır.
+İlk beş görüntü gerçek bir kişiye ait değildir: **çizilmiş bir sırt figürü** kullanıldı (omuz eğimi çizimde bilinir). Son bölüm, tek bir **gerçek fotoğrafı** (projenin referans görseli) gösterir. İşaretler, uygulamadaki ölçüm zincirinin gönderilen gerçek modeller üzerindeki çıktısıdır.
 
 > [!IMPORTANT]
 > Bunlar **başarım kanıtı değil, boru hattının ne yaptığının gösterimidir.** Modeller gerçek fotoğraflarla eğitildi; çizilmiş bir figürde çalışması gerçek fotoğraflarda doğru çalışacağı anlamına gelmez (örneğin 5° çizilen eğim 3.3° bulundu: bu figürde nokta hatası etiket gürültü tabanının çok üzerinde). Gerçek telefon fotoğraflarında kararsızlık ölçüldü, bkz. [METRICS.md](METRICS.md). Gerçek fotoğraf bölümü de kanıt değildir; nedenleri o bölümde.
 
 > [!NOTE]
-> IMU roll düzeltmesi bu örneklerde **gösterilmiyor** (roll = 0): düzeltmenin işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`. Uygulama ekranındaki **Cobb tahmini satırı da çizilmiyor**: kalibre edilmemiş bir yer tutucudur, bkz. METRICS.md → Bilinen boşluklar → `cobb_estimate`.
+> IMU roll düzeltmesi bu örneklerde **gösterilmiyor** (roll = 0): düzeltmenin işareti cihazda doğrulanmadı, bkz. METRICS.md → Bilinen boşluklar → `imu_roll_sign`. Uygulamanın **Cobb ölçümü satırı da çizilmiyor** (test aşaması, doğrulanmamış; bkz. METRICS.md → Bilinen boşluklar → `cobb_estimate`); uygulama ekranları için README'ye bakın.
 
 Modeller: `asama1.tflite` `9737b9d5792b7e6f…`, `asama2.tflite` `8f59347e45fe4354…` · 4 iş parçacığı · 2026-10-31.
 
@@ -105,12 +103,5 @@ Bu sayıları okurken:
 - **Doğru değer yok.** Bu fotoğraf için aksiller eğimin gerçek değeri bilinmiyor; yukarıdaki sayı zincirin çıktısıdır, bir karşılaştırma değil.
 - **IMU yok.** Telefon sensörü olmadığından roll ve pitch 0 alındı. Piksel değerleri 216×228 kaynak çözünürlüğündedir.
 - **Düşük çözünürlük.** 216×228 piksel, modele 640×640'a büyütülerek verildi; uygulamada telefon fotoğrafı küçültülür.
-- **Eğitim verisinde.** Aynı kare, projenin yerel veri klasöründe (`raw/aag/train`, depoya girmez) en az üç artırılmış kopyayla bulundu (renk ve kırpma farkıyla; gözle doğrulandı). Bu kopyalarda yalnızca C7 ve sakrum etiketli. Aşama 1 eğitimi kısmi etiketli görüntüleri de kullanır ([TEKNIK_DOKUMAN §5.3](tr/TEKNIK_DOKUMAN.md)); bu yüzden model bu kareyi eğitimde görmüş olabilir ve sonuç genelleme göstermez. Koronal sapmayı belirleyen C7 ve sakrum o kopyalarda etiketliydi; eğimi belirleyen koltuk altı noktaları etiketli değildi.
-- **Kapı yalnızca iki koltuk altı noktasına bakar** (`OlcumZinciri.kt`). Kapının dışında kalan şu noktalar aynı eşikleri aşıyor: omurga 1 (entropi 3.49, tepe 11.3 px), omurga 3 (entropi 2.59, tepe 4.4 px), sakrum (entropi 2.61, tepe 12.4 px). Koronal sapma C7 ve sakruma dayandığı için o sayıya kapı güvencesi verilmez.
-
-## Nasıl yeniden üretilir
-
-```bash
-pip install -r requirements/bench.txt pillow
-python -m skolyoz_metrics demo --stage1 asama1.tflite --stage2 asama2.tflite
-```
+- **Eğitim verisinde.** Aynı kare, projenin yerel veri klasöründe (`raw/aag/train`, depoya girmez) en az üç artırılmış kopyayla bulundu (renk ve kırpma farkıyla; gözle doğrulandı). Bu kopyalarda yalnızca C7 ve sakrum etiketli. Aşama 1 eğitimi kısmi etiketli görüntüleri de kullanır (iç teknik rapor, §5.3); bu yüzden model bu kareyi eğitimde görmüş olabilir ve sonuç genelleme göstermez. Koronal sapmayı belirleyen C7 ve sakrum o kopyalarda etiketliydi; eğimi belirleyen koltuk altı noktaları etiketli değildi.
+- **Kapı yalnızca iki koltuk altı noktasına bakar** (uygulamadaki ölçüm zinciri). Kapının dışında kalan şu noktalar aynı eşikleri aşıyor: omurga 1 (entropi 3.49, tepe 11.3 px), omurga 3 (entropi 2.59, tepe 4.4 px), sakrum (entropi 2.61, tepe 12.4 px). Koronal sapma C7 ve sakruma dayandığı için o sayıya kapı güvencesi verilmez.

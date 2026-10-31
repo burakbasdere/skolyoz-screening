@@ -1,7 +1,7 @@
 # Model kartı
 
-Sayılar burada tekrarlanmaz; bkz. [METRICS.md](METRICS.md). Aşağıdaki her iddia, o sayfanın ve
-araştırma notlarının desteklediği kadarla sınırlıdır.
+Sayılar burada tekrarlanmaz; bkz. [METRICS.md](METRICS.md). Aşağıdaki her iddia, o sayfanın
+desteklediği kadarla sınırlıdır.
 
 ## Modeller
 
@@ -9,7 +9,7 @@ araştırma notlarının desteklediği kadarla sınırlıdır.
 |---|---|---|
 | Rol | 7 landmark'ın kaba lokalizasyonu | Her landmark'ın alt-piksel rafinajı |
 | Mimari | Ultralytics YOLO11n-pose, ince ayarlı (7 keypoint) | MobileNetV3-small gövde + transpoze konvolüsyon başlığı, ısı haritası + soft-argmax |
-| Girdi | 640 × 640 RGB, `/255` | 128 × 128 RGB kırpım, ImageNet ortalama/std |
+| Girdi | 640 × 640 RGB, 0–1 aralığında | 128 × 128 RGB kırpım, ImageNet ortalama/std |
 | Dağıtım biçimi | TFLite float16 | TFLite float16 |
 | Ağırlıklar | dağıtılmaz ([DATA_AND_LICENSING.md](DATA_AND_LICENSING.md)) | dağıtılmaz |
 
@@ -18,14 +18,16 @@ araştırma notlarının desteklediği kadarla sınırlıdır.
 - Araştırma, eğitim ve pilot çalışmalarda **gövde asimetrisi için tarama yardımcısı**:
   dik duran, **arkadan** çekilmiş, telefon dik tutulmuş bir kişinin fotoğrafı; bir hekime
   yönlendirmenin değerli olup olmayabileceğine dair ipucu vermek için.
-- Çıktılar *göstergelerdir* (aksiller eğim, koronal denge); zorunlu "tanı aracı değildir"
-  ibaresiyle birlikte gösterilir.
+- Çıktılar *göstergelerdir* (aksiller eğim, koronal denge ve test aşamasındaki Cobb ölçümü);
+  zorunlu "tanı aracı değildir" ibaresiyle birlikte gösterilir.
+- Sistem **test aşamasındadır**; son kullanıcı ürünü değildir.
 
 ## Kapsam dışı — şunun için kullanmayın
 
 - **Tanı, şiddet derecelendirmesi ya da tedavi kararı.**
-- **Cobb açısı tahmini.** Projede radyografi eşleşmeli veri yok. Android arayüzünün şu an
-  gösterdiği Cobb değeri kalibre edilmemiş bir yer tutucudur (`cobb_estimate` boşluğuna bakın).
+- **Cobb açısının klinik ya da güvenilir bir ölçüsü olarak kullanım.** Uygulama Cobb açısı
+  ölçümü de yapar (test aşaması); projede radyografi eşleşmeli veri olmadığı için bu ölçüm
+  doğrulanmamıştır (`cobb_estimate` boşluğuna bakın).
 - Ön ya da yan görünüm, öne eğilme (Adams) testi, video veya ön kamera (görüntüyü aynalar,
   sağ ve sol yer değiştirir).
 - Eğitim verisinde bulunmayabilecek herhangi bir popülasyon. Yaş, cinsiyet ve ten rengi dağılımı
@@ -63,5 +65,5 @@ araştırma notlarının desteklediği kadarla sınırlıdır.
 | Yanlış alarm | Çıktı, klinik derece değil, veri kümesi dağılımındaki konumla birlikte tarama göstergesi olarak etiketlenir | Hedef popülasyondaki yaygınlık bilinmiyor |
 | Kararsız ısı haritasından sessizce yanlış açı | İki ölçütlü güven kapısı çekimi reddeder | Kapı gerçek bir çekim kampanyasında denenmedi |
 | Eğik tutulan telefondan yanlış açı | IMU roll düzeltmesi, 8°'de pitch kapısı | Sensör kalitesine bağlı |
-| Sağlık verisinin ifşası | Cihaz üstü çıkarım, `INTERNET` izni yok, yedekleme kapalı, görüntüler için `.gitignore` | Debug derlemeleri teşhis görüntülerini diske yazar (yalnızca `BuildConfig.DEBUG`) — gerçek kişilerde asla debug derlemesi kullanmayın |
+| Sağlık verisinin ifşası | Cihaz üstü çıkarım, internet izni yok, yedekleme kapalı, görüntüler depoya eklenmez | Debug derlemeleri teşhis görüntülerini diske yazar — gerçek kişilerde asla debug derlemesi kullanmayın |
 | Abartılı iddia | Durumlu ve boşluk kayıtlı, üretilen metrik sayfası | — |

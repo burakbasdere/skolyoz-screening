@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated": "2026-10-31",
-  "policy": "Her sayının bir durumu vardır. 'reported' (raporlanan) = projenin kendi yazılarından alınmış, burada yeniden çalıştırılmamış (özel veri gerektirir). 'measured' (ölçülen) = bu depodaki bir komutla üretilmiş. 'not_measured' / 'unvalidated' = bilinen boşluklar; bilerek listelenir.",
+  "policy": "Her sayının bir durumu vardır. 'reported' (raporlanan) = projenin kendi yazılarından alınmış, burada yeniden çalıştırılmamış (özel veri gerektirir). 'measured' (ölçülen) = proje içinde ölçülmüş. 'not_measured' / 'unvalidated' = bilinen boşluklar; bilerek listelenir.",
 
   "evaluations": {
     "cv5_stage2": {
@@ -11,8 +11,7 @@
       "n_images": 337,
       "n_landmarks": 1582,
       "status": "reported",
-      "source": "docs/tr/TEKNIK_DOKUMAN.md bölüm 5.5, 6.1, 6.2; scripts/40_rafinaj7_egit.py (JITTER = 35)",
-      "reproduce": ["python scripts/45_rafinaj7_cv.py --kat 5", "python scripts/46_cv_omurga_analiz.py"],
+      "source": "iç teknik rapor (yayımlanmamıştır), bölüm 5.5, 6.1, 6.2",
       "requires_private_data": true
     },
     "holdout50": {
@@ -21,8 +20,7 @@
       "model": "İki aşamalı boru hattı, PyTorch (2 landmark'lı önceki nesil; kaynak, karar tablosunun hangi model nesliyle üretildiğini ayrıca belirtmiyor)",
       "n_images": 50,
       "status": "reported",
-      "source": "docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2 ve Faz 1",
-      "reproduce": ["python scripts/20_tam_degerlendirme.py", "python scripts/26_tflite_degerlendirme.py"],
+      "source": "iç mobil çalışma notları (yayımlanmamıştır) bölüm 2 ve Faz 1",
       "requires_private_data": true
     }
   },
@@ -30,7 +28,7 @@
   "landmark_error": {
     "evaluation": "cv5_stage2",
     "status": "reported",
-    "source": "docs/tr/TEKNIK_DOKUMAN.md bölüm 6.1",
+    "source": "iç teknik rapor (yayımlanmamıştır) bölüm 6.1",
     "rows": [
       {"type": "axillary", "n": 674, "median_px": 3.045, "p90_px": 7.518, "label_floor_px": 2.45},
       {"type": "c7", "n": 182, "median_px": 11.772, "p90_px": 31.553, "label_floor_px": null},
@@ -47,7 +45,7 @@
   "angle_error": {
     "evaluation": "cv5_stage2",
     "status": "reported",
-    "source": "docs/tr/TEKNIK_DOKUMAN.md bölüm 6.2",
+    "source": "iç teknik rapor (yayımlanmamıştır) bölüm 6.2",
     "rows": [
       {"measurement": "axillary_tilt", "median_deg": 0.271, "p90_deg": 1.237, "signal_median_deg": 2.21, "label_floor_deg": 0.435},
       {"measurement": "coronal_balance", "median_deg": 1.292, "p90_deg": 3.385, "signal_median_deg": 1.71, "label_floor_deg": null}
@@ -63,7 +61,7 @@
   "screening_decision": {
     "evaluation": "holdout50",
     "status": "reported",
-    "source": "docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2 (test, n = 50)",
+    "source": "iç mobil çalışma notları (yayımlanmamıştır) bölüm 2 (test, n = 50)",
     "n": 50,
     "rows": [
       {"threshold_deg": 3, "positives": 16, "true_positives": 15, "correct": 44, "accuracy": 0.880, "macro_f1": 0.870, "recall": 0.938},
@@ -71,7 +69,7 @@
       {"threshold_deg": 7, "positives": 4, "true_positives": 4, "correct": 50, "accuracy": 1.000, "macro_f1": 1.000, "recall": 1.000}
     ],
     "notes": [
-      "Kaynak düzeltmesi: önceki README bu tabloyu 5 katlı çapraz doğrulamaya atfediyordu. Aynı sayılar MOBIL_YAPILACAKLAR.md içinde n = 50'lik test kümesi altında geçiyor ve '16 pozitif vakanın 15'i' 337 görüntülük bir değerlendirmeden çıkamaz; bu yüzden burada ayrılmış n = 50 sonucu olarak sınıflandırıldı. Doğrulamak için scripts/20 yeniden çalıştırılmalı.",
+      "Kaynak düzeltmesi: önceki README bu tabloyu 5 katlı çapraz doğrulamaya atfediyordu. Aynı sayılar iç mobil notlarında n = 50'lik test kümesi altında geçiyor ve '16 pozitif vakanın 15'i' 337 görüntülük bir değerlendirmeden çıkamaz; bu yüzden burada ayrılmış n = 50 sonucu olarak sınıflandırıldı. Doğrulamak için değerlendirme yeniden çalıştırılmalı.",
       "Wilson %95 aralıkları, sayımlardan gösterim anında hesaplanır. 4 ile 16 pozitif vakayla aralıklar geniştir: 7 derece satırı (4/4) hiçbir iddiayı desteklemez.",
       "Eşikler aksiller eğime uygulanır; bu bir yüzey asimetrisi göstergesidir, Cobb açısı değildir."
     ]
@@ -80,7 +78,7 @@
   "two_stage_ablation": {
     "evaluation": "holdout50",
     "status": "reported",
-    "source": "docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2",
+    "source": "iç mobil çalışma notları (yayımlanmamıştır) bölüm 2",
     "rows": [
       {"id": "keypoint_error_median", "metric": "Keypoint hatası, medyan", "unit": "px", "stage1": 24.35, "stage1_plus_2": 3.55, "floor": 2.45},
       {"id": "keypoint_error_mean", "metric": "Keypoint hatası, ortalama", "unit": "px", "stage1": 27.37, "stage1_plus_2": 7.83, "floor": null},
@@ -98,7 +96,7 @@
   "export_variants": {
     "evaluation": "holdout50",
     "status": "reported",
-    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Faz 1",
+    "source": "iç mobil çalışma notları (yayımlanmamıştır) Faz 1",
     "rows": [
       {"variant": "float16", "selected": true, "size_mb": 6.40, "median_px": 3.44, "median_deg": 0.417, "shoulder_accuracy": 0.860, "note": null},
       {"variant": "dynamic_range_quant", "selected": false, "size_mb": 3.59, "median_px": 3.80, "median_deg": 0.463, "shoulder_accuracy": 0.820, "note": "Açı ölçütünü geçiyor ama hangi omzun yüksek olduğu kararını bozuyor."},
@@ -108,13 +106,13 @@
       {"variant": "pytorch_reference", "selected": false, "size_mb": null, "median_px": 3.55, "median_deg": 0.380, "shoulder_accuracy": 0.860, "note": "float16'nın PyTorch'a göre maliyeti yaklaşık 0.04 derece."}
     ],
     "notes": [
-      "2 landmark'lı önceki modellerde ölçüldü. v0.1.0 ile gelen 7 landmark'lı modeller scripts/52 ile dönüştürüldü ama kuantizasyon maliyetleri değerlendirilmedi (bkz. boşluklar)."
+      "2 landmark'lı önceki modellerde ölçüldü. v0.1.0 ile gelen 7 landmark'lı modeller dönüştürüldü ama kuantizasyon maliyetleri değerlendirilmedi (bkz. boşluklar)."
     ]
   },
 
   "model_complexity": {
     "status": "measured",
-    "source": "python -m skolyoz_metrics bench arch (sayılar ağırlıklardan bağımsızdır); tests/test_bench_arch.py ile çapraz denetlenir",
+    "source": "mimari ölçümü (sayılar ağırlıklardan bağımsızdır)",
     "rows": [
       {"model": "stage1_yolo11n_pose_7kpt", "params": 2688252, "gflops": 6.717, "input": "1x3x640x640", "note": "2 landmark'lı varyantın 2.661.957 parametresi vardır; önceki dokümanlar bu değeri 7 landmark'lı model için yazmıştı."},
       {"model": "stage2_rafinaj7", "params": 405340, "gflops": 0.2265, "input": "1x3x128x128", "note": "Landmark başına bir kez çağrılır (ölçüm başına 7 kez)."}
@@ -132,26 +130,9 @@
     ]
   },
 
-  "parity": {
-    "status": "reported",
-    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Faz 3; android/app/src/test; tests/test_golden_parity.py",
-    "jvm_unit_tests": 42,
-    "instrumented_tests": 4,
-    "golden_rows": {"olcum": 18, "cikarim": 38, "kucultme": 6},
-    "acceptance_tolerance_deg": 0.05,
-    "reported_max_diff_px": 0.0,
-    "reported_max_diff_deg": 0.0,
-    "notes": [
-      "Altın veri CSV'lerindeki beklenen değerler elle yazılmaz, Python referansı çalıştırılarak üretilir (scripts/23_altin_veri.py); böylece iki gerçekleme fark edilmeden aynı yanlış işaret konvansiyonunu paylaşamaz.",
-      "0.000 px / 0.0000 derece değeri, gerçek bir telefon fotoğrafında ve birebir aynı 640 × 640 girdi tensörüyle elde edildi; yani Kotlin ve Python ölçüm ile ön işleme kodunu karşılaştırır, model çıkarımını değil.",
-      "4 cihaz (instrumented) testi fiziksel bir cihaz gerektirir ve CI'da çalıştırılmaz.",
-      "42 JVM testinin hepsi 2026-10-31'de Gradle 8.10.2 ve JDK 17 ile çalıştırıldı: 42 geçti, 0 kaldı, 0 atlandı. Bu 42, PerformansTest'i (çok gevşek sınırlı bir zamanlama testi) ve kalibre edilmemiş Cobb yer tutucusunun bir testini de içerir (bkz. boşluklar)."
-    ]
-  },
-
-  "jvm_preprocessing": {
+  "desktop_preprocessing": {
     "status": "measured",
-    "source": "./gradlew :app:testDebugUnitTest --tests '*PerformansTest*', 2026-10-31 (masaüstü JVM, Android Studio JBR 17, 11th Gen Intel Core i7-11800H); PerformansTest.kt",
+    "source": "masaüstü ölçümü, 2026-10-31 (11th Gen Intel Core i7-11800H)",
     "rows": [
       {"step": "Pillow uyumlu bilineer küçültme, 3000 x 4000 -> 640 x 640", "ms": 104.9},
       {"step": "iki adet 128 x 128 kırpım", "ms": 0.6},
@@ -160,7 +141,7 @@
       {"step": "toplam, TFLite hariç", "ms": 108.6}
     ],
     "notes": [
-      "Masaüstünde JIT derlemeli bir JVM'de 5 tekrarın ortalaması, ısınma dahil; Android çalışma zamanı (ART) süreleri değildir.",
+      "Masaüstünde JIT derlemeli bir çalışma zamanında 5 tekrarın ortalaması, ısınma dahil; Android çalışma zamanı (ART) süreleri değildir.",
       "Uygulama burada benzetilen 12 MP yerine yaklaşık 3 MP ile çeker; bu küçültme maliyetini azaltır ama etkisi ölçülmedi.",
       "3.1'deki yalnızca model süresiyle karşılaştırın: ön işleme, çıkarımın yanında ihmal edilebilir değildir."
     ]
@@ -169,7 +150,7 @@
   "device_reported": {
     "status": "reported",
     "device": "Redmi Note 9 Pro, Android 12 (API 31)",
-    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Faz 2",
+    "source": "iç mobil çalışma notları (yayımlanmamıştır) Faz 2",
     "shutter_latency_ms": [
       {"change": "başlangıç (MAXIMIZE_QUALITY, JPEG ana iş parçacığında çözülüyor)", "total_ms": 1100},
       {"change": "JPEG çözme arka plana alındı, inSampleSize ile çözülüyor", "total_ms": 950},
@@ -190,7 +171,7 @@
 
   "robustness": {
     "status": "reported",
-    "source": "docs/tr/MOBIL_YAPILACAKLAR.md Faz 3.5",
+    "source": "iç mobil çalışma notları (yayımlanmamıştır) Faz 3.5",
     "rows": [
       {"item": "Güven kapısı ret oranı", "value": "101 ölçümün 5'i (%5.0)", "context": "doğrulama + test görüntüleri"},
       {"item": "Telefon fotoğraflarında güven kapısı", "value": "3 / 3 reddedildi", "context": "aynı sahnenin art arda üç çekimi"},
@@ -207,7 +188,7 @@
 
   "dataset": {
     "status": "reported",
-    "source": "docs/tr/MOBIL_YAPILACAKLAR.md bölüm 2; docs/tr/TEKNIK_DOKUMAN.md bölüm 5.1",
+    "source": "iç mobil çalışma notları (yayımlanmamıştır) bölüm 2; iç teknik rapor (yayımlanmamıştır) bölüm 5.1",
     "rows": [
       {"item": "Dışa aktarımdaki ham dosya", "value": 1119},
       {"item": "Yinelemeler temizlendikten sonra benzersiz görüntü", "value": 441},
@@ -225,7 +206,7 @@
 
   "negative_results": {
     "status": "reported",
-    "source": "docs/tr/TEKNIK_DOKUMAN.md bölüm 6.3 ve 6.4",
+    "source": "iç teknik rapor (yayımlanmamıştır) bölüm 6.3 ve 6.4",
     "rows": [
       {"approach": "Görüntü işleme ile omurga izi (gölge vadisi)", "result": "Kalıntı RMS gövde boyunun %9.20'si; 110 görüntünün yalnızca 2'si kullanılabilir iz verdi.", "reason": "En düşük yoğunluklu nokta çoğunlukla omurga oluğu değil, skapula kenarı veya yan gölgedir."},
       {"approach": "Nokta gürültüsünü ortalamak için polinom uydurma", "result": "Apeks sapması hata / sinyal = 1.01 (derece 3).", "reason": "Landmark hataları bağımsız değil ilişkilidir, eğri hatayla birlikte kayar."},
@@ -237,11 +218,11 @@
   },
 
   "gaps": [
-    {"id": "on_device_inference_latency", "status": "not_measured", "what": "Aşama 1 + 7 x Aşama 2'nin telefondaki gecikmesi; RAM, enerji ve ısınma davranışı.", "why": "Cihazda yalnızca deklanşör gecikmesi ölçüldü. scripts/31 ~100-200 ms hedefi yazdırır, ama bu hedef boru hattı 7 değil 2 noktayı rafine ederken yazılmıştı.", "next": "docs/BENCHMARKING.md'deki protokolü en az bir düşük ve bir orta segment telefonda çalıştırın."},
+    {"id": "on_device_inference_latency", "status": "not_measured", "what": "Aşama 1 + 7 x Aşama 2'nin telefondaki gecikmesi; RAM, enerji ve ısınma davranışı.", "why": "Cihazda yalnızca deklanşör gecikmesi ölçüldü. Eski ~100-200 ms hedefi, boru hattı 7 değil 2 noktayı rafine ederken konmuştu. Uygulamanın kendi sayacının tek çekimlik değerleri (865, 880 ve 1188 ms) kontrolsüz gözlemlerdir: ısınma, tekrar ve dağılım yok.", "next": "Protokollü bir ölçüm yapın: en az bir düşük ve bir orta segment telefonda, ısınma ve tekrarlarla."},
     {"id": "end_to_end_accuracy", "status": "not_measured", "what": "7 landmark için gerçek Aşama 1 çıktılarıyla tam zincirin doğruluğu.", "why": "Çapraz doğrulama, Aşama 2'yi gerçek Aşama 1 tahminleriyle değil, benzetilen (±35 px) kaydırmalarla besliyor.", "next": "Aşama 1'i de katman dışı (out-of-fold) eğitin, sonra zinciri o görüntülerde değerlendirin."},
-    {"id": "tflite_accuracy_7_landmarks", "status": "not_measured", "what": "7 landmark'lı TFLite modellerinin kuantizasyon maliyeti.", "why": "Yalnızca 2 landmark'lı modeller için ölçüldü (yaklaşık +0.04 derece).", "next": "scripts/26'yı 7 landmark'lı boru hattına genişletin."},
+    {"id": "tflite_accuracy_7_landmarks", "status": "not_measured", "what": "7 landmark'lı TFLite modellerinin kuantizasyon maliyeti.", "why": "Yalnızca 2 landmark'lı modeller için ölçüldü (yaklaşık +0.04 derece).", "next": "Değerlendirmeyi 7 landmark'lı boru hattına genişletin."},
     {"id": "phone_photo_accuracy", "status": "not_measured", "what": "Hedeflenen protokolle telefonla çekilmiş fotoğraflardaki doğruluk.", "why": "Eğitim ve değerlendirme görüntüleri web kaynaklı; telefon verisi bir avuç gayriresmî çekimden ibaret.", "next": "Protokole uygun 200-300 telefon fotoğrafı toplayın ve ikinci bir bağımsız etiketleme turu yapın."},
-    {"id": "cobb_estimate", "status": "unvalidated", "what": "Android arayüzünde gösterilen Cobb açısı tahmini ve risk kategorisi (Kalibrasyon.cobbTahmini, scripts/48_cobb_kalibrasyon.py).", "why": "Katsayıları (1.25 / 1.10 / 2.40) ve '±3.5 derece' hata payı, radyografi eşleşmeli hiçbir veriye uydurulmadı (bu projede böyle veri yok) ve projenin 'arayüzde Cobb açısı yazılmaz' kuralıyla çelişiyor. Ölçüm değil, yer tutucu olarak değerlendirin.", "next": "Radyografi eşleşmeli veriyle kalibre edilene kadar arayüzden kaldırın ya da bir debug bayrağının arkasına alın."},
-    {"id": "imu_roll_sign", "status": "not_measured", "what": "IMU roll düzeltmesinin işareti (ölçülen açıdan roll'un çıkarılması) cihazda doğrulanmadı.", "why": "Uygulama yerçekimi yatayını (cos r, sin r) yönünde, yani roll > 0 iken sağa doğru alçalan bir çizgi olarak çiziyor (KilavuzCizer.kt, scripts/19), ama sayıyı 'ham − roll' olarak hesaplıyor. Roll > 0 iken seviyeli iki nokta için sayı −roll veriyor (sol omuz yüksek), çizimde ise sağ uç yüksek görünüyor: sayı ve çizim birbirini tutmuyor. Android TYPE_GRAVITY işareti ve arka kamera görüntüsü varsayımıyla yapılan bir muhakeme çizimi destekliyor, formülü değil; bu doğruysa düzeltme hatayı sıfırlamak yerine ikiye katlar. Altın veri testleri yalnızca Kotlin ile Python'un aynı formülü uyguladığını doğrular, işaretin fiziksel doğruluğunu değil; belgelerde işaretin cihazda doğrulandığına dair kayıt yok. Bu bir şüphedir, kanıtlanmış bir hata değil.", "next": "Telefonu bilinen bir açıyla (ör. 10°) eğik tutup düz bir yatay kenarı (duvar, masa kenarı) çekin: düzeltilmiş açı ≈ 0 ise formül doğrudur, ≈ ±20° ise işaret ters. Ters çıkarsa scripts/19, Olcum.kt, KilavuzCizer.kt ve altın veriyi birlikte düzeltin."}
+    {"id": "cobb_estimate", "status": "unvalidated", "what": "Android uygulamasının yaptığı ve 'Cobb tahmini ~X° (±3.5°)' olarak gösterdiği Cobb açısı ölçümü ile risk kategorisi. Özellik test aşamasındadır; son kullanıcı ürünü değildir.", "why": "Ölçüm yapılır ve gösterilir, ancak katsayıları (1.25 / 1.10 / 2.40) ve '±3.5 derece' hata payı radyografi eşleşmeli hiçbir veriye uydurulmadı (bu projede böyle veri yok); doğruluğu bilinmiyor. Çıktı bu nedenle klinik karar için kullanılamaz.", "next": "Radyografi eşleşmeli veriyle kalibre edin ve hatasını raporlayın; o zamana kadar 'test aşaması' etiketi kalsın."},
+    {"id": "imu_roll_sign", "status": "not_measured", "what": "IMU roll düzeltmesinin işareti (ölçülen açıdan roll'un çıkarılması) cihazda doğrulanmadı.", "why": "Uygulama yerçekimi yatayını (cos r, sin r) yönünde, yani roll > 0 iken sağa doğru alçalan bir çizgi olarak çiziyor, ama sayıyı 'ham − roll' olarak hesaplıyor. Roll > 0 iken seviyeli iki nokta için sayı −roll veriyor (sol omuz yüksek), çizimde ise sağ uç yüksek görünüyor: sayı ve çizim birbirini tutmuyor. Android'in yerçekimi sensörünün işareti ve arka kamera görüntüsü varsayımıyla yapılan bir muhakeme çizimi destekliyor, formülü değil; bu doğruysa düzeltme hatayı sıfırlamak yerine ikiye katlar. Uygulamanın iki gerçeklemesinin aynı formülü uygulaması işaretin fiziksel doğruluğunu göstermez; işaretin cihazda doğrulandığına dair kayıt yok. Bu bir şüphedir, kanıtlanmış bir hata değil.", "next": "Telefonu bilinen bir açıyla (ör. 10°) eğik tutup düz bir yatay kenarı (duvar, masa kenarı) çekin: düzeltilmiş açı ≈ 0 ise formül doğrudur, ≈ ±20° ise işaret ters. Ters çıkarsa formül ve çizim birlikte düzeltilmelidir."}
   ]
 }

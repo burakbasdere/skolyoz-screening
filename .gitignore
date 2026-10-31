@@ -2,7 +2,6 @@
 # Back photographs are personal health data and this repository is public.
 data/
 datasets/
-c7_bel_sokumu_gorselleri/
 *.zip
 *.jpg
 *.jpeg
@@ -19,38 +18,15 @@ c7_bel_sokumu_gorselleri/
 !docs/img/referans/skolyoz.webp
 !docs/img/uygulama/ekran-[123].jpg
 
-# --- Model weights and training output ------------------------------------
-# Weights are derived from third-party training data and from Ultralytics
-# YOLO11 (AGPL-3.0); see docs/DATA_AND_LICENSING.md before publishing any.
+# --- Model weights and app packages (never published here) -----------------
 *.pt
 *.pth
 *.onnx
 *.tflite
 *.apk
 *.aab
-runs/
-weights/
 
-# --- Python ----------------------------------------------------------------
-__pycache__/
-*.py[cod]
-.venv/
-.venv-*/
-venv/
-env/
-*.egg-info/
-.ipynb_checkpoints/
-.pytest_cache/
-.ruff_cache/
-
-# --- Build / backup ----------------------------------------------------------
-yedek/
-build/
-.gradle/
-
-# --- IDE / OS ----------------------------------------------------------------
-.vscode/
-.idea/
+# --- OS ----------------------------------------------------------------------
 Thumbs.db
 desktop.ini
 .DS_Store
