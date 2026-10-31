@@ -52,26 +52,6 @@ Map back to the original resolution; measurement in pure geometry
 Gates: |pitch| > 8° rejects the shot · low-confidence heatmaps are rejected
 ```
 
-## Example outputs
-
-These are the shipped TFLite models run on a **drawn (synthetic) back figure**; none of these five
-images shows a real person. They illustrate what the pipeline does, not how well it works: the models were trained
-on real photographs, and on the drawn figure the point error is clearly larger (a drawn 5° tilt was
-measured as 3.3°). Numbers and all landmarks: [docs/ORNEKLER.md](docs/ORNEKLER.md) (Turkish).
-
-<table>
-<tr>
-<td align="center"><img src="docs/img/ornekler/duz.png" width="250" alt="Symmetric figure: axillary tilt +0.33 degrees"><br><sub><b>Symmetric figure</b><br>tilt +0.33°, gate passed</sub></td>
-<td align="center"><img src="docs/img/ornekler/asimetri.png" width="250" alt="Right shoulder high: axillary tilt +3.34 degrees"><br><sub><b>Right shoulder high</b><br>drawn 5°, measured +3.34°</sub></td>
-<td align="center"><img src="docs/img/ornekler/bulanik.png" width="250" alt="Blurred shot: confidence gate rejects"><br><sub><b>Blurred shot</b><br>gate rejects (entropy 3.74)</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="docs/img/ornekler/pitch.png" width="250" alt="Phone tilted 11 degrees: measurement invalid"><br><sub><b>Phone tilted 11°</b><br>shutter locked</sub></td>
-<td align="center"><img src="docs/img/ornekler/kisi-yok.png" width="250" alt="Empty frame: no person found"><br><sub><b>Nobody in frame</b><br>no measurement</sub></td>
-<td></td>
-</tr>
-</table>
-
 ## What is in the repository
 
 This is the full source, not just a results page. What is deliberately **not** included:
